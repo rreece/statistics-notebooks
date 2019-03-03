@@ -17,7 +17,7 @@ Created: October 26, 2018
 License
 -------------------------------------------------------------------------------
 
-Copyleft 2014-2017 Ryan Reece        
+Copyleft 2018-2019 Ryan Reece        
 License: GPL <http://www.gnu.org/licenses/gpl.html>
 
 
