@@ -10,14 +10,14 @@ This repo is for my statistics notes.
 Author
 -------------------------------------------------------------------------------
 
-Ryan Reece <ryan.reece@cern.ch>
+Ryan Reece <ryan.d.reece@live.com>       
 Created: October 26, 2018
 
 
 License
 -------------------------------------------------------------------------------
 
-Copyleft 2014-2017 Ryan Reece
+Copyleft 2014-2017 Ryan Reece        
 License: GPL <http://www.gnu.org/licenses/gpl.html>
 
 
