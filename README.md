@@ -7,6 +7,12 @@ Introduction
 This repo is for my statistics notes.
 
 
+Launching a jupyter notebook server
+-------------------------------------------------------------------------------
+
+    jupyter notebook --no-browser --port=8989
+
+
 Author
 -------------------------------------------------------------------------------
 
@@ -19,13 +25,6 @@ License
 
 Copyleft 2018-2019 Ryan Reece        
 License: GPL <http://www.gnu.org/licenses/gpl.html>
-
-
-
-Launching a jupyter notebook server
--------------------------------------------------------------------------------
-
-    jupyter notebook --no-browser --port=8989
 
 
 See also
