@@ -47,8 +47,9 @@ else
     virtualenv -p python3 env1
     source env1/bin/activate
     pip3 install -r requirements.txt
-    echo "  Installing ipykernel for virtualenv env1"
-    ./env1/bin/python3 -m ipykernel install --prefix=$HOME/.local --name 'stats-py3'
+#    echo "  Installing ipykernel for virtualenv env1"
+#    ./env1/bin/python3 -m ipykernel install --prefix=$HOME/.local --name 'stats-py3'
+#    ./env1/bin/python3 -m ipykernel install --prefix=env1 --name 'stats-py3'
 fi
 
 
@@ -78,12 +79,18 @@ fi
 #    cd ${path_of_this_dir}
 #fi
 
+#if [ ! -d python ]; then
+#    echo "mkdir python"
+#    mkdir python
+#fi
+
 ## rreece/easyplot
-if [ ! -d python/easyplot ]; then
-    cd python
-    git clone git@github.com:rreece/easyplot.git
-    cd ${path_of_this_dir}
-fi
+#if [ ! -d python/easyplot ]; then
+#    echo "Installing easyplot..."
+#    git clone git@github.com:rreece/easyplot.git
+#    mv easyplot/easyplot python/
+#    rm -rf easyplot
+#fi
 
 
 ##-----------------------------------------------------------------------------
