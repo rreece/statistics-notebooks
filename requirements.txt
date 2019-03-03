@@ -22,6 +22,7 @@ scipy
 sklearn
 #scikits.odes
 #easyplot
+pyhf
 
 ## DEEP LEARNING
 #tensorflow==1.9.0
