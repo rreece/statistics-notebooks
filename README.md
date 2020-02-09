@@ -10,7 +10,7 @@ This repo is for my statistics notes.
 Launching a jupyter notebook server
 -------------------------------------------------------------------------------
 
-    jupyter notebook --no-browser --port=8989
+    jupyter notebook --no-browser --port=8000
 
 
 Author
