@@ -1,6 +1,6 @@
 #
 # file: setup.sh
-# author: Ryan Reece <ryan@cerebras.net>
+# author: Ryan Reece <https://github.com/rreece>
 # created: April 19, 2018
 #
 # Basic setup script
@@ -109,10 +109,10 @@ echo "  done."
 ## setup PATH
 ##-----------------------------------------------------------------------------
 
-#echo "  Setting up your PATH."
+echo "  Setting up your PATH."
 ##add_to_path ${MY_PROJECT}
-#add_to_path ${MY_PROJECT}/scripts
-#echo "  done."
+add_to_path ${MY_PROJECT}/scripts
+echo "  done."
 
 
 ##-----------------------------------------------------------------------------

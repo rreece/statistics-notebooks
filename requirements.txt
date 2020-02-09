@@ -8,13 +8,13 @@ paramiko
 pillow
 pyyaml
 six
-tornado==5.1.1
+tornado
 virtualenv
 virtualenvwrapper
 
 ## DATA SCI
-numpy==1.14.5
-matplotlib
+numpy
+matplotlib==2.2.5
 h5py
 jupyter
 ipykernel
