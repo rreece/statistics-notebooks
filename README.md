@@ -16,7 +16,7 @@ Launching a jupyter notebook server
 Author
 -------------------------------------------------------------------------------
 
-Ryan Reece <https://github.com/rreece>
+Ryan Reece <https://github.com/rreece>      
 Created: October 26, 2018
 
 
