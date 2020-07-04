@@ -22,7 +22,8 @@ from . import stat
 plt.style.use([hep.style.CMS, hep.style.firamath])
 
 
-def hist1d(bins, y,
+def hist1d(bins,
+           y=None,
            yerr=None,
            yerrs=None,
            data=None,
@@ -30,34 +31,70 @@ def hist1d(bins, y,
            ratio=False,
            unit='GeV'):
 
-    y = y.copy()
-    y.reverse()
-    labels = labels.copy()
-    labels.reverse()
-    
     n_bins = len(bins)-1
-    n_samples = len(y)
-    
-    for y_i in y:
-        assert n_bins == len(y_i)
-    
+    n_samples = 0
+
+    if y is not None:
+        n_samples = len(y)
+        y = y.copy()
+        y.reverse()
+        if labels is not None:
+            labels = labels.copy()
+            labels.reverse()
+
+        for y_i in y:
+            assert n_bins == len(y_i)
+
+#    TODO: convert to and support numpy arrays as input
+#    bins = np.asarray(bins, dtype=np.float32)
+#    if y is not None:
+#        y = np.asarray(y, dtype=np.float32)
+#    if yerr is not None:
+#        yerr = np.asarray(yerr, dtype=np.float32)
+#    if yerrs is not None:
+#        yerrs = np.asarray(yerrs, dtype=np.float32)
+#    if data is not None:
+#        data = np.asarray(data, dtype=np.float32)
+
+    ## convert yerr from [bin][up,down] to [down,up][bin]
+    if yerr is not None:
+        yerr = [ 
+                [ _y[1] for _y in yerr ],
+                [ _y[0] for _y in yerr ],
+               ]
+#        yerr = np.swapaxes(yerr, 0, 1)
+#        yerr = np.flip(yerr, 0)
+
+    ## convert yerrs from [sample][bin][up,down] to [sample][down,up][bin]
+    if yerrs is not None:
+        yerrs = [ 
+                    [
+                        [ _y[1] for _y in _yerr ],
+                        [ _y[0] for _y in _yerr ],
+                    ] for _yerr in yerrs
+               ]
+#        yerrs = np.swapaxes(yerrs, 1, 2)
+#        yerrs = np.flip(yerr, 1)
+
     ## prep derivative data
-    ytotal  = [sum(i) for i in zip(*y)]
-    dataerr = [
-                [stat.poisson_error_down(_y) for _y in data],
-                [stat.poisson_error_up(_y) for _y in data],
-              ]
-    
-    colors = [plt.cm.Spectral(i/float(n_samples-1)) for i in range(n_samples)]
-    binned = [bins[:-1] for _ in range(n_samples)]
-    weights = y
-    bincenters = np.mean(np.vstack([bins[0:-1],bins[1:]]), axis=0)
-    binwidths = [bins[i+1]-bins[i] for i in range(n_bins)]
-    
+    ytotal = None
+    if y is not None:
+        ytotal  = [sum(i) for i in zip(*y)]
+#        ytotal = np.sum(y, axis=1)
+    if data is not None:
+        dataerr = [
+                    [stat.poisson_error_down(_y) for _y in data],
+                    [stat.poisson_error_up(_y) for _y in data],
+                  ]
+#        dataerr = np.zeros((2, n_bins), dtype=np.float32)
+#        for j_bin in range(n_bins):
+#            dataerr[0][j_bin] = stat.poisson_error_down(data[j_bin])
+#            dataerr[1][j_bin] = stat.poisson_error_up(data[j_bin])
+
     ## make top subplot
     fig = plt.figure()
     axes = list()
-    if data and ratio:
+    if (data is not None) and ratio:
         gs = fig.add_gridspec(2, 1, height_ratios=(3, 1),
                               wspace=0, hspace=0.04)
         ax1 = fig.add_subplot(gs[0, 0])
@@ -67,40 +104,61 @@ def hist1d(bins, y,
         axes.append(ax1)
     
     ## plot hist stack
-    plt.hist(binned, bins, weights=weights,
-        stacked=True,
-        density=False,
-        color=colors,
-        label=labels,
-        )
-    
-    ## axis labels
-    plt.ylabel('Events / (%g %s)' % (binwidths[0], unit))
-    if not ratio:
-        plt.xlabel('Dependent variable [%s]' % (unit))
+    if y is not None:
+        colors = [plt.cm.Spectral(i/float(n_samples-1)) for i in range(n_samples)]
+        binned = [bins[:-1] for _ in range(n_samples)]
+#        binned = np.asarray([bins[:-1] for _ in range(n_samples)], dtype=np.float32)
+        weights = y
+        bincenters = np.mean(np.vstack([bins[0:-1],bins[1:]]), axis=0)
+        binwidths = [bins[i+1]-bins[i] for i in range(n_bins)]
+#        binwidths = np.asarray([bins[i+1]-bins[i] for i in range(n_bins)], dtype=np.float32)
 
-    ## sum yerrs
-    if yerrs:
+#        print('DEBUG: n_samples', n_samples, flush=True)
+#        print('DEBUG: bins.shape', bins.shape, flush=True)
+#        print('DEBUG: binned.shape', binned.shape, flush=True)
+#        print('DEBUG: weights.shape', weights.shape, flush=True)
+        
+        plt.hist(binned, bins,
+            weights=weights,
+            stacked=True,
+            density=False,
+            color=colors,
+            label=labels,
+            )
+    
+    ## sum yerrs to yerr
+    if yerrs is not None:
         for yerrs_i in yerrs:
-            assert len(yerrs_i) == n_bins
-        yerr = [0.]*n_bins
+            assert len(yerrs_i) == 2
+        yerr_down = [0.]*n_bins
         for yerrs_i in yerrs:
-            for j_yerr, yerr_j in enumerate(yerrs_i):
-                yerr[j_yerr] += yerr_j*yerr_j
+            assert len(yerrs_i[0]) == n_bins
+            for j_yerr, yerr_j in enumerate(yerrs_i[0]):
+                yerr_down[j_yerr] += yerr_j*yerr_j
         for j_yerr in range(n_bins):
-            yerr[j_yerr] = math.sqrt(yerr[j_yerr])
+            yerr_down[j_yerr] = math.sqrt(yerr_down[j_yerr])
+        yerr_up = [0.]*n_bins
+        for yerrs_i in yerrs:
+            assert len(yerrs_i[1]) == n_bins
+            for j_yerr, yerr_j in enumerate(yerrs_i[1]):
+                yerr_up[j_yerr] += yerr_j*yerr_j
+        for j_yerr in range(n_bins):
+            yerr_up[j_yerr] = math.sqrt(yerr_up[j_yerr])
+        yerr = [yerr_down, yerr_up]
+#        yerr = np.sqrt(np.sum(yerrs**2, axis=0))
 
     ## plot error band
-    if yerr:
+    if yerr is not None:
         xerr = [
                 [w/2 for w in binwidths],
                 [w/2 for w in binwidths],
             ]
+        xerr = np.asarray(xerr)
         uncert_boxes = make_error_boxes(ax1, bincenters, ytotal, xerr, yerr,
                                         hatch='///')
     
     ## plot data
-    if data:
+    if data is not None:
         plt.errorbar(bincenters, data, yerr=dataerr, 
             label='Data',
             fmt='o',
@@ -112,13 +170,18 @@ def hist1d(bins, y,
             zorder=100,
             )
     
+    ## axis labels
+    plt.ylabel('Events / (%g %s)' % (binwidths[0], unit))
+    if not ratio:
+        plt.xlabel('Dependent variable [%s]' % (unit))
+
     ## make legend
     total_mean = sum([y_i*x_i for y_i, x_i in zip(ytotal, bincenters)])/n_bins
     middle_of_range = (bins[-1] - bins[0])/2
     
     leg_handles, leg_labels = ax1.get_legend_handles_labels()
 
-    if data:
+    if data is not None:
         data_handle = leg_handles.pop()
         data_label = leg_labels.pop()
         assert data_label == 'Data'
@@ -126,14 +189,13 @@ def hist1d(bins, y,
     leg_handles.reverse()
     leg_labels.reverse()
 
-    if yerr:
+    if yerr is not None:
         leg_handles.append(Patch(facecolor='darkgray',
-                                edgecolor='none',
-                                alpha=0.4,
-                                hatch='///'))
+                                 alpha=0.4,
+                                 hatch='///'))
         leg_labels.append('Uncert.')
 
-    if data:
+    if data is not None:
         leg_handles.append(data_handle)
         leg_labels.append(data_label)
     
@@ -144,13 +206,13 @@ def hist1d(bins, y,
     leg = plt.legend(leg_handles, leg_labels, loc=leg_loc)
     
     ## make ratio
-    if data and ratio:
+    if (data is not None) and ratio:
         plt.setp(ax1.get_xticklabels(), visible=False)
         
         ax2 = fig.add_subplot(gs[1, 0], sharex=ax1)
         axes.append(ax2)
         
-        plt.axhline(y=1.0, color='lightgray', linestyle='-', zorder=-1)
+        plt.axhline(y=1.0, color='darkgray', linestyle='-', zorder=-1)
         
         y_ratio = [d_i/y_i if y_i else 0. for d_i, y_i in zip(data, ytotal)]
         y_ratio_err = [
@@ -159,7 +221,7 @@ def hist1d(bins, y,
         ]
 
         ## plot error band
-        if yerr:
+        if yerr is not None:
             y_ratio_band = [
                 [ye_i/y_i for y_i, ye_i in zip(ytotal, yerr[0])],
                 [ye_i/y_i for y_i, ye_i in zip(ytotal, yerr[1])],
@@ -169,7 +231,8 @@ def hist1d(bins, y,
                     [w/2 for w in binwidths],
                     [w/2 for w in binwidths],
                 ]
-            make_error_boxes(ax2, bincenters, [1.0]*n_bins, xerr, y_ratio_band)
+            make_error_boxes(ax2, bincenters, [1.0]*n_bins, xerr, y_ratio_band,
+                             hatch='///')
         
         ## plot ratio
         plt.errorbar(bincenters, y_ratio, yerr=y_ratio_err,
@@ -193,7 +256,7 @@ def hist1d(bins, y,
 
 def make_error_boxes(ax, xdata, ydata, xerror, yerror,
                      facecolor='darkgray',
-                     edgecolor='none',
+#                     edgecolor='none',
                      alpha=0.4,
                      hatch=None,
                      zorder=20):
@@ -217,7 +280,7 @@ def make_error_boxes(ax, xdata, ydata, xerror, yerror,
     pc = PatchCollection(errorboxes,
                          facecolor=facecolor,
                          alpha=alpha,
-                         edgecolor=edgecolor,
+#                         edgecolor=edgecolor,
                          hatch=hatch,
                          zorder=zorder)
 
