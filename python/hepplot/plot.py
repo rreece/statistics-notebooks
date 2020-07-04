@@ -3,6 +3,12 @@ hepplot/plot.py
 
 See:
 https://github.com/CoffeaTeam/coffea/blob/master/coffea/hist/plot.py
+
+TODOs:
+-   Support support arrays as input and convert internal
+    calculations to use numpy.
+-   Make sure everything can be optional: y, yerr, yerrs, data.
+-   Support symmetric gaussian errors for yerr and yerrs.
 """
 
 
