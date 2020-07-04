@@ -5,10 +5,11 @@ See:
 https://github.com/CoffeaTeam/coffea/blob/master/coffea/hist/plot.py
 
 TODOs:
--   Support support arrays as input and convert internal
+[x] Support support arrays as input and convert internal
     calculations to use numpy.
--   Make sure everything can be optional: y, yerr, yerrs, data.
--   Support symmetric gaussian errors for yerr and yerrs.
+[x]  Make sure everything can be optional: y, yerr, yerrs, data.
+[ ]  Support symmetric gaussian errors for yerr and yerrs.
+[ ]  Support only one y in model.
 """
 
 
@@ -26,7 +27,6 @@ from . import stat
 
 #plt.style.use(hep.style.ATLAS)
 plt.style.use([hep.style.CMS, hep.style.firamath])
-use_numpy = False
 
 
 def hist1d(bins,
@@ -48,71 +48,55 @@ def hist1d(bins,
         if labels is not None:
             labels = labels.copy()
             labels.reverse()
+#        if isinstance(y, list):
+#            for y_i in y:
+#                assert n_bins == len(y_i)
 
-        for y_i in y:
-            assert n_bins == len(y_i)
-
-#    TODO: convert to and support numpy arrays as input
-    if use_numpy:
-        bins = np.asarray(bins, dtype=np.float32)
-        if y is not None:
-            if isinstance(y, list):
-                y = [ np.asarray(y_i, dtype=np.float32) for y_i in y ]
-            else:
-                y = np.asarray(y, dtype=np.float32)
-        if yerr is not None:
-            yerr = np.asarray(yerr, dtype=np.float32)
-        if yerrs is not None:
-            assert isinstance(yerrs, list)
-            yerrs = [ np.asarray(yerrs_i, dtype=np.float32) for yerrs_i in yerrs ]
-        if data is not None:
-            data = np.asarray(data, dtype=np.float32)
+    ## convert to np.arrays if needed
+    bins = np.asarray(bins, dtype=np.float32)
+    if y is not None:
+        if isinstance(y, list):
+            y = [ np.asarray(y_i, dtype=np.float32) for y_i in y ]
+        else:
+            y = np.asarray(y, dtype=np.float32)
+    if yerr is not None:
+        yerr = np.asarray(yerr, dtype=np.float32)
+    if yerrs is not None:
+        assert isinstance(yerrs, list)
+        yerrs = [ np.asarray(yerrs_i, dtype=np.float32) for yerrs_i in yerrs ]
+    if data is not None:
+        data = np.asarray(data, dtype=np.float32)
 
     ## convert yerr from [bin][up,down] to [down,up][bin]
     if yerr is not None:
-        if use_numpy:
-            yerr = np.swapaxes(yerr, 0, 1)
-            yerr = np.flip(yerr, 0)
-        else:
-            yerr = [ 
-                    [ _y[1] for _y in yerr ],
-                    [ _y[0] for _y in yerr ],
-                   ]
+        yerr = np.swapaxes(yerr, 0, 1)
+        yerr = np.flip(yerr, 0)
 
     ## convert yerrs from [sample][bin][up,down] to [sample][down,up][bin]
     if yerrs is not None:
-        if use_numpy:
-            for _i in range(n_samples):
-                yerrs[_i] = np.swapaxes(yerrs[_i], 0, 1)
-                yerrs[_i] = np.flip(yerrs[_i], 0)
-        else:
-            yerrs = [ 
-                        [
-                            [ _y[1] for _y in _yerr ],
-                            [ _y[0] for _y in _yerr ],
-                        ] for _yerr in yerrs
-                   ]
+        for _i in range(n_samples):
+            yerrs[_i] = np.swapaxes(yerrs[_i], 0, 1)
+            yerrs[_i] = np.flip(yerrs[_i], 0)
+
+    ## allow gaussian symmetric errors
+#    if yerrs is not None:
+#        if yerrs[0].rank == 1
+#            _yerrs = [ np.zeros((2, n_bins), dtype=np.float32) for _ in yerrs ]
+#            for j_bin in range(n_bins):
+#                _yerrs[0][j_bin] = yerrs[j_bin]
+#                _yerrs[1][j_bin] = 
 
     ## prep derivative data
     ytotal = None
     if y is not None:
-        if use_numpy:
-            ytotal  = np.zeros((n_bins,), dtype=np.float32)
-            for _i in range(n_samples):
-                ytotal  = ytotal + y[_i]
-        else:
-            ytotal  = [sum(i) for i in zip(*y)]
+        ytotal  = np.zeros((n_bins,), dtype=np.float32)
+        for _i in range(n_samples):
+            ytotal  = ytotal + y[_i]
     if data is not None:
-        if use_numpy:
-            dataerr = np.zeros((2, n_bins), dtype=np.float32)
-            for j_bin in range(n_bins):
-                dataerr[0][j_bin] = stat.poisson_error_down(data[j_bin])
-                dataerr[1][j_bin] = stat.poisson_error_up(data[j_bin])
-        else:
-            dataerr = [
-                        [stat.poisson_error_down(_y) for _y in data],
-                        [stat.poisson_error_up(_y) for _y in data],
-                      ]
+        dataerr = np.zeros((2, n_bins), dtype=np.float32)
+        for j_bin in range(n_bins):
+            dataerr[0][j_bin] = stat.poisson_error_down(data[j_bin])
+            dataerr[1][j_bin] = stat.poisson_error_up(data[j_bin])
 
     ## make top subplot
     fig = plt.figure()
@@ -125,27 +109,16 @@ def hist1d(bins,
     else:
         fig, ax1 = plt.subplots()
         axes.append(ax1)
+
+    bincenters = np.mean(np.vstack([bins[0:-1],bins[1:]]), axis=0)
+    binwidths = np.asarray([bins[i+1]-bins[i] for i in range(n_bins)], dtype=np.float32)
     
     ## plot hist stack
     if y is not None:
         colors = [plt.cm.Spectral(i/float(n_samples-1)) for i in range(n_samples)]
         weights = y
-        bincenters = np.mean(np.vstack([bins[0:-1],bins[1:]]), axis=0)
-        if use_numpy:
-            binned = [np.asarray(bins[:-1], dtype=np.float32) for _ in range(n_samples)]
-            binwidths = np.asarray([bins[i+1]-bins[i] for i in range(n_bins)], dtype=np.float32)
-        else:
-            binned = [bins[:-1] for _ in range(n_samples)]
-            binwidths = [bins[i+1]-bins[i] for i in range(n_bins)]
+        binned = [np.asarray(bins[:-1], dtype=np.float32) for _ in range(n_samples)]
 
-        if use_numpy:
-            print('DEBUG: n_samples = ', n_samples, flush=True)
-            print('DEBUG: bins.shape = ', bins.shape, flush=True)
-            print('DEBUG: len(binned) = ', len(binned), flush=True)
-            print('DEBUG: binned[0].shape = ', binned[0].shape, flush=True)
-            print('DEBUG: len(weights) = ', len(weights), flush=True)
-            print('DEBUG: weights[0].shape = ', weights[0].shape, flush=True)
-        
         plt.hist(binned, bins,
             weights=weights,
             stacked=True,
@@ -153,37 +126,14 @@ def hist1d(bins,
             color=colors,
             label=labels,
             )
-    
+
     ## sum yerrs to yerr
     if yerrs is not None:
-        if use_numpy:
-            yerr = np.zeros((2, n_bins), dtype=np.float32)
-            print('DEBUG: yerr.shape = ', yerr.shape, flush=True)
-            print('DEBUG: yerrs[0].shape = ', yerrs[0].shape, flush=True)
+        yerr = np.zeros((2, n_bins), dtype=np.float32)
 
-            for _i in range(n_samples):
-                yerr = yerr + (yerrs[_i]*yerrs[_i])
-            yerr = np.sqrt(yerr)
-
-            print('DEBUG: yerr.shape = ', yerr.shape, flush=True)
-        else:
-            for yerrs_i in yerrs:
-                assert len(yerrs_i) == 2
-            yerr_down = [0.]*n_bins
-            for yerrs_i in yerrs:
-                assert len(yerrs_i[0]) == n_bins
-                for j_yerr, yerr_j in enumerate(yerrs_i[0]):
-                    yerr_down[j_yerr] += yerr_j*yerr_j
-            for j_yerr in range(n_bins):
-                yerr_down[j_yerr] = math.sqrt(yerr_down[j_yerr])
-            yerr_up = [0.]*n_bins
-            for yerrs_i in yerrs:
-                assert len(yerrs_i[1]) == n_bins
-                for j_yerr, yerr_j in enumerate(yerrs_i[1]):
-                    yerr_up[j_yerr] += yerr_j*yerr_j
-            for j_yerr in range(n_bins):
-                yerr_up[j_yerr] = math.sqrt(yerr_up[j_yerr])
-            yerr = [yerr_down, yerr_up]
+        for _i in range(n_samples):
+            yerr = yerr + (yerrs[_i]*yerrs[_i])
+        yerr = np.sqrt(yerr)
 
     ## plot error band
     if yerr is not None:
@@ -191,8 +141,7 @@ def hist1d(bins,
                 [w/2 for w in binwidths],
                 [w/2 for w in binwidths],
             ]
-        if use_numpy:
-            xerr = np.asarray(xerr)
+        xerr = np.asarray(xerr)
         uncert_boxes = make_error_boxes(ax1, bincenters, ytotal, xerr, yerr,
                                         hatch='///')
     
@@ -215,9 +164,6 @@ def hist1d(bins,
         plt.xlabel('Dependent variable [%s]' % (unit))
 
     ## make legend
-    total_mean = sum([y_i*x_i for y_i, x_i in zip(ytotal, bincenters)])/n_bins
-    middle_of_range = (bins[-1] - bins[0])/2
-    
     leg_handles, leg_labels = ax1.get_legend_handles_labels()
 
     if data is not None:
@@ -237,7 +183,15 @@ def hist1d(bins,
     if data is not None:
         leg_handles.append(data_handle)
         leg_labels.append(data_label)
-    
+
+    total_mean = 0.
+    if ytotal is not None:
+        total_mean = sum([y_i*x_i for y_i, x_i in zip(ytotal, bincenters)])/n_bins
+    elif data is not None:
+        total_mean = sum([y_i*x_i for y_i, x_i in zip(data, bincenters)])/n_bins
+
+    middle_of_range = (bins[-1] - bins[0])/2
+
     leg_loc = 'upper left'
     if total_mean > middle_of_range:
         leg_loc = 'upper right'
@@ -270,8 +224,8 @@ def hist1d(bins,
                     [w/2 for w in binwidths],
                     [w/2 for w in binwidths],
                 ]
-            make_error_boxes(ax2, bincenters, [1.0]*n_bins, xerr, y_ratio_band,
-                             hatch='///')
+            make_error_boxes(ax2, bincenters, [1.0]*n_bins, xerr, y_ratio_band)
+#                             hatch='///')
         
         ## plot ratio
         plt.errorbar(bincenters, y_ratio, yerr=y_ratio_err,
