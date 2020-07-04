@@ -124,6 +124,3 @@ echo "  done."
 #    add_to_ld_library_path /usr/local/cuda/lib64
 #    add_to_ld_library_path /usr/local/cuda/extras/CUPTI/lib64
 #fi
-
-
-

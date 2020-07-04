@@ -1,27 +1,27 @@
 
 ## MISC REQS
-requests
-psutil
-python-dateutil
-py-cpuinfo
-paramiko
-pillow
-pyyaml
-six
-tornado
-virtualenv
-virtualenvwrapper
+#requests
+#psutil
+#python-dateutil
+#py-cpuinfo
+#paramiko
+#pillow
+#pyyaml
+#six
+#tornado
 
 ## DATA SCI
 numpy
-matplotlib==2.2.5
 h5py
+#matplotlib==2.2.5
+matplotlib
 jupyter
 ipykernel
 scipy
 sklearn
 #scikits.odes
 #easyplot
+mplhep
 pyhf
 
 ## DEEP LEARNING
