@@ -1,5 +1,10 @@
 """
-stat
+hepplot/stat.py
+
+See:
+https://en.wikipedia.org/wiki/Poisson_distribution#Confidence_interval
+https://en.wikipedia.org/wiki/Chi-square_distribution#Asymptotic_properties
+https://www.johndcook.com/blog/wilson_hilferty/
 """
 
 

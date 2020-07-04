@@ -1,8 +1,7 @@
 """
+hepplot/plot.py
+
 See:
-https://en.wikipedia.org/wiki/Poisson_distribution#Confidence_interval
-https://en.wikipedia.org/wiki/Chi-square_distribution#Asymptotic_properties
-https://www.johndcook.com/blog/wilson_hilferty/
 https://github.com/CoffeaTeam/coffea/blob/master/coffea/hist/plot.py
 """
 
@@ -17,6 +16,7 @@ from matplotlib.patches import Rectangle
 from matplotlib.patches import Patch
 
 from . import stat
+
 
 #plt.style.use(hep.style.ATLAS)
 plt.style.use([hep.style.CMS, hep.style.firamath])
