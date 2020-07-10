@@ -8,8 +8,9 @@ TODOs:
 [x] Support support arrays as input and convert internal
     calculations to use numpy.
 [x]  Make sure everything can be optional: y, yerr, yerrs, data.
-[ ]  Support symmetric gaussian errors for yerr and yerrs.
-[ ]  Support only one y in model.
+[x]  Support symmetric gaussian errors for yerr and yerrs.
+[x]  Support only one y in model.
+[ ]  Add signal histogram lines.
 """
 
 
@@ -33,24 +34,46 @@ def hist1d(bins,
            y=None,
            yerr=None,
            yerrs=None,
-           data=None,
            labels=None,
+           data=None,
+           data_err=None,
+           data_label=None,
+           signals=None,
+           signal_labels=None,
            ratio=False,
-           unit='GeV'):
+           xlabel=None,
+           ylabel=None,
+           unit=None):
+
+    assert not (yerr and yerrs)
 
     n_bins = len(bins)-1
     n_samples = 0
 
     if y is not None:
-        n_samples = len(y)
-        y = y.copy()
-        y.reverse()
-        if labels is not None:
-            labels = labels.copy()
-            labels.reverse()
-#        if isinstance(y, list):
-#            for y_i in y:
-#                assert n_bins == len(y_i)
+        if isinstance(y, list) and isinstance(y[0], (list, np.ndarray)):
+            n_samples = len(y)
+            for y_i in y:
+                assert n_bins == len(y_i)
+            y = y.copy()
+            y.reverse()
+            if labels is not None:
+                labels = labels.copy()
+                labels.reverse()
+        else:
+            assert n_bins == len(y)
+            n_samples = 1
+            # if y one sample, and not a list of samples, make it one
+            y = [y]
+            if not isinstance(labels, list):
+                labels = [labels]
+
+    ## set default poisson errors for data
+    if (data is not None) and (data_err is None):
+        data_err = np.zeros((n_bins, 2), dtype=np.float32)
+        for j_bin in range(n_bins):
+            data_err[j_bin][0] = stat.poisson_error_up(data[j_bin])
+            data_err[j_bin][1] = stat.poisson_error_down(data[j_bin])
 
     ## convert to np.arrays if needed
     bins = np.asarray(bins, dtype=np.float32)
@@ -66,6 +89,41 @@ def hist1d(bins,
         yerrs = [ np.asarray(yerrs_i, dtype=np.float32) for yerrs_i in yerrs ]
     if data is not None:
         data = np.asarray(data, dtype=np.float32)
+    ## TODO: signals
+
+    ## allow gaussian symmetric yerr
+    if yerr is not None:
+        if isinstance(yerr[0], (list, np.ndarray)):
+            assert len(yerr[0]) == 2
+        else:
+            _yerr = np.zeros((n_bins, 2), dtype=np.float32)
+            for j_bin in range(n_bins):
+                _yerr[j_bin][0] = yerr[j_bin]
+                _yerr[j_bin][1] = yerr[j_bin]
+            yerr = _yerr
+
+    ## allow gaussian symmetric yerrs
+    if yerrs is not None:
+        if isinstance(yerrs[0][0], (list, np.ndarray)):
+            assert len(yerrs[0][0]) == 2
+        else:
+            _yerrs = [ np.zeros((n_bins, 2), dtype=np.float32) for _ in yerrs ]
+            for i_sample in range(n_samples):
+                for j_bin in range(n_bins):
+                    _yerrs[i_sample][j_bin][0] = yerrs[i_sample][j_bin]
+                    _yerrs[i_sample][j_bin][1] = yerrs[i_sample][j_bin]
+            yerrs = _yerrs
+
+    ## allow gaussian symmetric data_err
+    if data_err is not None:
+        if isinstance(data_err[0], (list, np.ndarray)):
+            assert len(data_err[0]) == 2
+        else:
+            _data_err = np.zeros((n_bins, 2), dtype=np.float32)
+            for j_bin in range(n_bins):
+                _data_err[j_bin][0] = _data_err[j_bin]
+                _data_err[j_bin][1] = _data_err[j_bin]
+            data_err = _data_err
 
     ## convert yerr from [bin][up,down] to [down,up][bin]
     if yerr is not None:
@@ -78,25 +136,17 @@ def hist1d(bins,
             yerrs[_i] = np.swapaxes(yerrs[_i], 0, 1)
             yerrs[_i] = np.flip(yerrs[_i], 0)
 
-    ## allow gaussian symmetric errors
-#    if yerrs is not None:
-#        if yerrs[0].rank == 1
-#            _yerrs = [ np.zeros((2, n_bins), dtype=np.float32) for _ in yerrs ]
-#            for j_bin in range(n_bins):
-#                _yerrs[0][j_bin] = yerrs[j_bin]
-#                _yerrs[1][j_bin] = 
+    ## convert data_err from [bin][up,down] to [down,up][bin]
+    if data_err is not None:
+        data_err = np.swapaxes(data_err, 0, 1)
+        data_err = np.flip(data_err, 0)
 
-    ## prep derivative data
+    ## calculate ytotal
     ytotal = None
     if y is not None:
         ytotal  = np.zeros((n_bins,), dtype=np.float32)
         for _i in range(n_samples):
             ytotal  = ytotal + y[_i]
-    if data is not None:
-        dataerr = np.zeros((2, n_bins), dtype=np.float32)
-        for j_bin in range(n_bins):
-            dataerr[0][j_bin] = stat.poisson_error_down(data[j_bin])
-            dataerr[1][j_bin] = stat.poisson_error_up(data[j_bin])
 
     ## make top subplot
     fig = plt.figure()
@@ -112,10 +162,14 @@ def hist1d(bins,
 
     bincenters = np.mean(np.vstack([bins[0:-1],bins[1:]]), axis=0)
     binwidths = np.asarray([bins[i+1]-bins[i] for i in range(n_bins)], dtype=np.float32)
-    
+
     ## plot hist stack
     if y is not None:
-        colors = [plt.cm.Spectral(i/float(n_samples-1)) for i in range(n_samples)]
+        # TODO: make colors configurable
+        if n_samples > 1:
+            colors = [plt.cm.Spectral(i/float(n_samples-1)) for i in range(n_samples)]
+        else:
+            colors = ['lightgray']
         weights = y
         binned = [np.asarray(bins[:-1], dtype=np.float32) for _ in range(n_samples)]
 
@@ -144,11 +198,33 @@ def hist1d(bins,
         xerr = np.asarray(xerr)
         uncert_boxes = make_error_boxes(ax1, bincenters, ytotal, xerr, yerr,
                                         hatch='///')
-    
+
+    # TODO
+    signal_colors = ['orange', 'cyan', 'pink']
+
+    ## plot signals
+    n_signals = 0
+    if signals is not None:
+        n_signals = len(signals)
+        binned = [np.asarray(bins[:-1], dtype=np.float32) for _ in range(n_signals)]
+        for i_sig, _signal in enumerate(signals):
+            plt.hist(binned, bins,
+                weights=signals,
+                stacked=False,
+                density=False,
+                label=signal_labels[:n_signals],
+                color=signal_colors[:n_signals],
+#                label=signal_labels[i_sig],
+#                edgecolor=signal_colors[i_sig],
+                histtype='step',
+                linewidth=2,
+                fill=False,
+                )
+
     ## plot data
     if data is not None:
-        plt.errorbar(bincenters, data, yerr=dataerr, 
-            label='Data',
+        plt.errorbar(bincenters, data, yerr=data_err, 
+            label=data_label,
             fmt='o',
             color='black',
             ecolor='black',
@@ -159,44 +235,68 @@ def hist1d(bins,
             )
     
     ## axis labels
-    plt.ylabel('Events / (%g %s)' % (binwidths[0], unit))
+    _label = ''
+    if ylabel:
+        _label = ylabel
+        if unit:
+            _label += (' / (%g %s)' % (binwidths[0], unit))
+        plt.ylabel(_label)
     if not ratio:
-        plt.xlabel('Dependent variable [%s]' % (unit))
+        _label = ''
+        if xlabel:
+            _label = xlabel
+            if unit:
+                _label += ' [%s]' % (unit)
+            plt.xlabel(_label)
 
     ## make legend
-    leg_handles, leg_labels = ax1.get_legend_handles_labels()
+    if labels or data_label:
+        leg_handles, leg_labels = ax1.get_legend_handles_labels()
+    
+        if (data is not None) and data_label:
+            data_handle = leg_handles.pop()
+            assert leg_labels.pop() == data_label
 
-    if data is not None:
-        data_handle = leg_handles.pop()
-        data_label = leg_labels.pop()
-        assert data_label == 'Data'
+        if (signals is not None) and signal_labels:
+            signal_handels = list()
+            for _ in range(n_signals):
+                signal_handels.append(leg_handles.pop())
+                assert leg_labels.pop() in signal_labels
+            signal_handels.reverse()
 
-    leg_handles.reverse()
-    leg_labels.reverse()
+        if labels:
+            leg_handles.reverse()
+            leg_labels.reverse()
 
-    if yerr is not None:
-        leg_handles.append(Patch(facecolor='darkgray',
-                                 alpha=0.4,
-                                 hatch='///'))
-        leg_labels.append('Uncert.')
+        if yerr is not None:
+            leg_handles.append(Patch(facecolor='darkgray',
+                                     alpha=0.4,
+                                     hatch='///'))
+            leg_labels.append('Uncert.')
 
-    if data is not None:
-        leg_handles.append(data_handle)
-        leg_labels.append(data_label)
+        if (data is not None) and data_label:
+            leg_handles.append(data_handle)
+            leg_labels.append(data_label)
 
-    total_mean = 0.
-    if ytotal is not None:
-        total_mean = sum([y_i*x_i for y_i, x_i in zip(ytotal, bincenters)])/n_bins
-    elif data is not None:
-        total_mean = sum([y_i*x_i for y_i, x_i in zip(data, bincenters)])/n_bins
+        if (signals is not None) and signal_labels:
+            leg_handles.extend(signal_handels)
+            leg_labels.extend(signal_labels)
 
-    middle_of_range = (bins[-1] - bins[0])/2
+        total_mean = 0.
+        if ytotal is not None:
+            sum_ytotal = sum(ytotal)
+            total_mean = sum([y_i*x_i/sum_ytotal for y_i, x_i in zip(ytotal, bincenters)])
+        elif data is not None:
+            sum_data = sum(data)
+            total_mean = sum([y_i*x_i/sum_data for y_i, x_i in zip(data, bincenters)])
 
-    leg_loc = 'upper left'
-    if total_mean > middle_of_range:
-        leg_loc = 'upper right'
+        middle_of_range = (bins[-1] - bins[0])/2
 
-    leg = plt.legend(leg_handles, leg_labels, loc=leg_loc)
+        leg_loc = 'upper left'
+        if total_mean < middle_of_range:
+            leg_loc = 'upper right'
+
+        leg = plt.legend(leg_handles, leg_labels, loc=leg_loc)
     
     ## make ratio
     if (data is not None) and ratio:
@@ -209,8 +309,8 @@ def hist1d(bins,
         
         y_ratio = [d_i/y_i if y_i else 0. for d_i, y_i in zip(data, ytotal)]
         y_ratio_err = [
-            [de_i/d_i for d_i, de_i in zip(data, dataerr[0])],
-            [de_i/d_i for d_i, de_i in zip(data, dataerr[1])],
+            [de_i/d_i for d_i, de_i in zip(data, data_err[0])],
+            [de_i/d_i for d_i, de_i in zip(data, data_err[1])],
         ]
 
         ## plot error band
@@ -242,7 +342,12 @@ def hist1d(bins,
         ## axis labels
         ax2.set_ylabel('Data / Model')
         #ax2.set_ylim(0.7, 1.3) # HACK
-        plt.xlabel('Dependent variable [unit]')
+        _label = ''
+        if xlabel:
+            _label = xlabel
+            if unit:
+                _label += ' [%s]' % (unit)
+            plt.xlabel(_label)
     
         fig.subplots_adjust(wspace=0, hspace=0)
 
