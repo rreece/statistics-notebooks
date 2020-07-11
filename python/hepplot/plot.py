@@ -10,7 +10,7 @@ TODOs:
 [x]  Make sure everything can be optional: y, yerr, yerrs, data.
 [x]  Support symmetric gaussian errors for yerr and yerrs.
 [x]  Support only one y in model.
-[ ]  Add signal histogram lines.
+[x]  Add signal histogram lines.
 """
 
 
@@ -40,12 +40,14 @@ def hist1d(bins,
            data_label=None,
            signals=None,
            signal_labels=None,
-           ratio=False,
            xlabel=None,
            ylabel=None,
-           unit=None):
+           unit=None,
+           ratio=False,
+           stack_signals=True,
+           ):
 
-    assert not (yerr and yerrs)
+    assert not ((yerr is not None) and (yerrs is not None))
 
     n_bins = len(bins)-1
     n_samples = 0
@@ -86,10 +88,12 @@ def hist1d(bins,
         yerr = np.asarray(yerr, dtype=np.float32)
     if yerrs is not None:
         assert isinstance(yerrs, list)
-        yerrs = [ np.asarray(yerrs_i, dtype=np.float32) for yerrs_i in yerrs ]
+        yerrs = [ np.asarray(yerr_i, dtype=np.float32) for yerr_i in yerrs ]
     if data is not None:
         data = np.asarray(data, dtype=np.float32)
-    ## TODO: signals
+    if signals is not None:
+        assert isinstance(signals, list)
+        signals = [ np.asarray(signal_i, dtype=np.float32) for signal_i in signals ]
 
     ## allow gaussian symmetric yerr
     if yerr is not None:
@@ -181,6 +185,29 @@ def hist1d(bins,
             label=labels,
             )
 
+    # TODO
+    signal_colors = ['orange', 'cyan', 'lime', 'magenta']
+
+    ## plot signals
+    n_signals = 0
+    if signals is not None:
+        n_signals = len(signals)
+        if stack_signals: # stack signals on top of ytotal
+            for i_sig in range(n_signals):
+                for j_bin in range(n_bins):
+                    signals[i_sig][j_bin] = signals[i_sig][j_bin] + ytotal[j_bin]
+        binned = [np.asarray(bins[:-1], dtype=np.float32) for _ in range(n_signals)]
+        plt.hist(binned, bins,
+            weights=signals,
+            stacked=False,
+            density=False,
+            label=signal_labels[:n_signals],
+            color=signal_colors[:n_signals],
+            histtype='step',
+            linewidth=2,
+            fill=False,
+            )
+
     ## sum yerrs to yerr
     if yerrs is not None:
         yerr = np.zeros((2, n_bins), dtype=np.float32)
@@ -198,28 +225,6 @@ def hist1d(bins,
         xerr = np.asarray(xerr)
         uncert_boxes = make_error_boxes(ax1, bincenters, ytotal, xerr, yerr,
                                         hatch='///')
-
-    # TODO
-    signal_colors = ['orange', 'cyan', 'pink']
-
-    ## plot signals
-    n_signals = 0
-    if signals is not None:
-        n_signals = len(signals)
-        binned = [np.asarray(bins[:-1], dtype=np.float32) for _ in range(n_signals)]
-        for i_sig, _signal in enumerate(signals):
-            plt.hist(binned, bins,
-                weights=signals,
-                stacked=False,
-                density=False,
-                label=signal_labels[:n_signals],
-                color=signal_colors[:n_signals],
-#                label=signal_labels[i_sig],
-#                edgecolor=signal_colors[i_sig],
-                histtype='step',
-                linewidth=2,
-                fill=False,
-                )
 
     ## plot data
     if data is not None:
@@ -262,7 +267,7 @@ def hist1d(bins,
             for _ in range(n_signals):
                 signal_handels.append(leg_handles.pop())
                 assert leg_labels.pop() in signal_labels
-            signal_handels.reverse()
+#            signal_handels.reverse()
 
         if labels:
             leg_handles.reverse()
