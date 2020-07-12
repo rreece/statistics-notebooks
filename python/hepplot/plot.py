@@ -393,7 +393,7 @@ def make_error_boxes(ax, xdata, ydata, xerror, yerror,
     return pc
 
 
-def plot_mu_scan(test_mus, hypo_tests, test_size=0.05):
+def plot_mu_scan(hypo_tests, test_mus, test_size=0.05):
     import pyhf.contrib.viz.brazil
     fig, ax = plt.subplots()
     ax.set_ylabel('CLs')

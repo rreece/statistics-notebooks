@@ -31,12 +31,12 @@ def make_pdf(bkg_data, bkg_uncerts, signal_data):
     return pdf
 
 
-def hypo_test(pdf, data, poi=1.0, init_pars=None, par_bounds=None):
+def hypo_test(pdf, data, mu=1.0, init_pars=None, par_bounds=None):
     if init_pars is None:
         init_pars = pdf.config.suggested_init()
     if par_bounds is None:
         par_bounds = pdf.config.suggested_bounds()
-    CLs_obs, CLs_exp_band = pyhf.infer.hypotest(poi,
+    CLs_obs, CLs_exp_band = pyhf.infer.hypotest(mu,
                                                 data + pdf.config.auxdata,
                                                 pdf,
                                                 init_pars,
@@ -45,28 +45,35 @@ def hypo_test(pdf, data, poi=1.0, init_pars=None, par_bounds=None):
     return CLs_obs, CLs_exp_band
 
 
-def hypo_test_scan(pdf, data, test_pois=None, init_pars=None, par_bounds=None):
-    if par_bounds is None:
-        par_bounds = pdf.config.suggested_bounds()
-    if test_pois is None:
-        poi_bounds = par_bounds[pdf.config.poi_index]
-        steps_per_mu = 10
-        poi_steps = (poi_bounds[1] - poi_bounds[0]) * steps_per_mu + 1
-        test_pois = np.linspace(poi_bounds[0], poi_bounds[1], poi_steps)
+def hypo_test_scan(pdf, 
+                   data,
+                   test_mus=None,
+                   init_pars=None,
+                   mu_bounds=None,
+                   mu_step=0.1,
+                   ):
+    par_bounds = pdf.config.suggested_bounds()
+    if mu_bounds is None:
+        mu_bounds = par_bounds[pdf.config.poi_index]
+    else:
+        par_bounds[pdf.config.poi_index] = mu_bounds
+    if test_mus is None:
+        mu_steps = (mu_bounds[1] - mu_bounds[0]) * int(round(1./mu_step)) + 1
+        test_mus = np.linspace(mu_bounds[0], mu_bounds[1], mu_steps)
     hypo_tests = [
         hypo_test(pdf=pdf,
                   data=data,
-                  poi=poi,
+                  mu=mu,
                   init_pars=init_pars,
                   par_bounds=par_bounds)
-        for poi in test_pois
+        for mu in test_mus
     ]
+    return hypo_tests, test_mus
+
+
+def invert_interval(hypo_tests, test_mus, test_size=0.05):
     cls_exp = [np.array([test[1][i] for test in hypo_tests]).flatten() for i in range(5)]
     cls_obs = np.array([test[0] for test in hypo_tests]).flatten()
-    return hypo_tests, test_pois, cls_exp, cls_obs
-
-
-def invert_interval(test_mus, cls_exp, cls_obs, test_size=0.05):
     crossing_test_stats = {'exp': [], 'obs': None}
     for cls_exp_sigma in cls_exp:
         crossing_test_stats['exp'].append(
