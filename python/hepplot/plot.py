@@ -391,3 +391,19 @@ def make_error_boxes(ax, xdata, ydata, xerror, yerror,
     ax.add_collection(pc)
 
     return pc
+
+
+def plot_mu_scan(test_mus, hypo_tests, test_size=0.05):
+    import pyhf.contrib.viz.brazil
+    fig, ax = plt.subplots()
+    ax.set_ylabel('CLs')
+    ax.set_xlabel(r'$\mu$')
+    pyhf.contrib.viz.brazil.plot_results(ax, test_mus, hypo_tests)
+
+
+def plot_mu_scan2(test_mus, cls_exp, cls_obs, test_size=0.05):
+    plt.plot(test_mus, cls_obs, c='k')
+    for i, c in zip(range(5), ['gray', 'gray', 'gray', 'gray', 'gray']):
+        plt.plot(test_mus, cls_exp[i], c=c)
+    plt.plot(test_mus, [test_size] * len(test_mus), c="r")
+    plt.ylim(0, 1)
