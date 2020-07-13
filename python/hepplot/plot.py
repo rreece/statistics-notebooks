@@ -16,6 +16,7 @@ TODOs:
 
 import math
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import mplhep as hep
 
@@ -26,6 +27,7 @@ from matplotlib.patches import Patch
 from . import stat
 
 
+matplotlib.rc('text', usetex = True)
 #plt.style.use(hep.style.ATLAS)
 plt.style.use([hep.style.CMS, hep.style.firamath])
 
@@ -267,7 +269,6 @@ def hist1d(bins,
             for _ in range(n_signals):
                 signal_handels.append(leg_handles.pop())
                 assert leg_labels.pop() in signal_labels
-#            signal_handels.reverse()
 
         if labels:
             leg_handles.reverse()
@@ -396,14 +397,25 @@ def make_error_boxes(ax, xdata, ydata, xerror, yerror,
 def plot_mu_scan(hypo_tests, test_mus, test_size=0.05):
     import pyhf.contrib.viz.brazil
     fig, ax = plt.subplots()
-    ax.set_ylabel('CLs')
     ax.set_xlabel(r'$\mu$')
+    ax.set_ylabel(r'$\mathrm{CLs}$')
     pyhf.contrib.viz.brazil.plot_results(ax, test_mus, hypo_tests)
 
 
 def plot_mu_scan2(test_mus, cls_exp, cls_obs, test_size=0.05):
+    fig, ax = plt.subplots()
     plt.plot(test_mus, cls_obs, c='k')
     for i, c in zip(range(5), ['gray', 'gray', 'gray', 'gray', 'gray']):
         plt.plot(test_mus, cls_exp[i], c=c)
-    plt.plot(test_mus, [test_size] * len(test_mus), c="r")
-    plt.ylim(0, 1)
+    plt.plot(test_mus, [test_size] * len(test_mus), c='r')
+#    plt.ylim(0, 1)
+    ax.set_xlabel(r'$\theta$')
+    ax.set_ylabel(r'$\mu$')
+
+
+def plot_confidence_band(x, exp, obs, yline=None):
+    import pyhf.contrib.viz.brazil
+    fig, ax = plt.subplots()
+    ax.set_xlabel(r'$\mu$')
+    ax.set_ylabel(r'$\mathrm{CLs}$')
+    pyhf.contrib.viz.brazil.plot_results(ax, x, hypo_tests, test_size=yline)
