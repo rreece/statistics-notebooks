@@ -357,6 +357,8 @@ def hist1d(bins,
     
         fig.subplots_adjust(wspace=0, hspace=0)
 
+    return fig, [ax1, ax2]
+
 
 def make_error_boxes(ax, xdata, ydata, xerror, yerror,
                      facecolor='darkgray',
@@ -394,28 +396,36 @@ def make_error_boxes(ax, xdata, ydata, xerror, yerror,
     return pc
 
 
-def plot_mu_scan(hypo_tests, test_mus, test_size=0.05):
-    import pyhf.contrib.viz.brazil
+def plot_brazil(x, exp, obs,
+                xlabel=None,
+                ylabel=None,
+                xlim=None,
+                ylim=None,
+                yline=None,
+                ):
+    """
+    Plot a series of hypothesis tests for various POI values.
+
+    def plot_results(ax, mutests, tests, test_size=0.05):
+        cls_obs = np.array([test[0] for test in tests]).flatten()
+        cls_exp = [np.array([test[1][i] for test in tests]).flatten() for i in range(5)]
+    """
     fig, ax = plt.subplots()
-    ax.set_xlabel(r'$\mu$')
-    ax.set_ylabel(r'$\mathrm{CLs}$')
-    pyhf.contrib.viz.brazil.plot_results(ax, test_mus, hypo_tests)
-
-
-def plot_mu_scan2(test_mus, cls_exp, cls_obs, test_size=0.05):
-    fig, ax = plt.subplots()
-    plt.plot(test_mus, cls_obs, c='k')
-    for i, c in zip(range(5), ['gray', 'gray', 'gray', 'gray', 'gray']):
-        plt.plot(test_mus, cls_exp[i], c=c)
-    plt.plot(test_mus, [test_size] * len(test_mus), c='r')
-#    plt.ylim(0, 1)
-    ax.set_xlabel(r'$\theta$')
-    ax.set_ylabel(r'$\mu$')
-
-
-def plot_confidence_band(x, exp, obs, yline=None):
-    import pyhf.contrib.viz.brazil
-    fig, ax = plt.subplots()
-    ax.set_xlabel(r'$\mu$')
-    ax.set_ylabel(r'$\mathrm{CLs}$')
-    pyhf.contrib.viz.brazil.plot_results(ax, x, hypo_tests, test_size=yline)
+    for idx, color in zip(range(5), 5 * ['black']):
+        ax.plot(
+            x, exp[idx], c=color, linestyle='dotted' if idx != 2 else 'dashed'
+        )
+    ax.fill_between(x, exp[0], exp[-1], facecolor='yellow')
+    ax.fill_between(x, exp[1], exp[-2], facecolor='green')
+    ax.plot(x, obs, c='black')
+    if yline is not None:
+        ax.plot(x, [yline] * len(x), c='red')
+    if xlim is not None:
+        ax.set_xlim(*xlim)
+    if ylim is not None:
+        ax.set_ylim(*ylim)
+    if xlabel is not None:
+        ax.set_xlabel(xlabel)
+    if ylabel is not None:
+        ax.set_ylabel(ylabel)
+    return fig, ax

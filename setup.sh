@@ -124,3 +124,11 @@ echo "  done."
 #    add_to_ld_library_path /usr/local/cuda/lib64
 #    add_to_ld_library_path /usr/local/cuda/extras/CUPTI/lib64
 #fi
+
+
+##-----------------------------------------------------------------------------
+
+echo ""
+echo "To start jupyter, do:"
+echo "jupyter notebook --no-browser --port=8000"
+echo ""
