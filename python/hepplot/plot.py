@@ -46,6 +46,7 @@ def hist1d(bins,
            ylabel=None,
            unit=None,
            ratio=False,
+           ratio_label='Data / Model',
            stack_signals=True,
            ):
 
@@ -346,7 +347,8 @@ def hist1d(bins,
             )
         
         ## axis labels
-        ax2.set_ylabel('Data / Model')
+        if ratio_label:
+            ax2.set_ylabel(ratio_label)
         #ax2.set_ylim(0.7, 1.3) # HACK
         _label = ''
         if xlabel:
@@ -396,7 +398,7 @@ def make_error_boxes(ax, xdata, ydata, xerror, yerror,
     return pc
 
 
-def plot_brazil(x, exp, obs,
+def brazil(x, exp, obs,
                 xlabel=None,
                 ylabel=None,
                 xlim=None,
