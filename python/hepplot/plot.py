@@ -28,8 +28,10 @@ from . import stats
 
 
 #matplotlib.rc('text', usetex = True)
+#matplotlib.rcParams['text.latex.preamble'] = [r'\usepackage[cm]{sfmath}']
 #plt.style.use(hep.style.ATLAS)
-plt.style.use([hep.style.CMS, hep.style.firamath])
+#plt.style.use([hep.style.CMS, hep.style.firamath])
+plt.style.use([hep.style.CMS])
 plt.style.use([{
     'xaxis.labellocation': 'center',
     'yaxis.labellocation': 'center',
