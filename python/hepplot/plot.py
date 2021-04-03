@@ -302,17 +302,10 @@ def hist1d(bins,
     ## axis labels
     _label = ''
     if ylabel:
-        _label = ylabel
-        if unit:
-            _label += (' / (%g %s)' % (binwidths[0], unit))
-        plt.ylabel(_label, fontsize=fontsize) # HACK
+        plt.ylabel(ylabel, fontsize=fontsize) # HACK
     if not ratio:
-        _label = ''
         if xlabel:
-            _label = xlabel
-            if unit:
-                _label += ' [%s]' % (unit)
-            plt.xlabel(_label, fontsize=fontsize) # HACK
+            plt.xlabel(xlabel, fontsize=fontsize) # HACK
 
     if xlabels:
         # We want to show all ticks...
