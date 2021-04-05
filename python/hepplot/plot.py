@@ -358,13 +358,11 @@ def hist1d(bins,
         if ytotal is not None:
             sum_ytotal = sum(ytotal)
             total_mean = sum([y_i*x_i/sum_ytotal for y_i, x_i in zip(ytotal, bincenters)])
-            print('DEBUG: ytotal total_mean = ', total_mean, flush=True)
         elif data is not None:
             sum_data = sum(data)
             total_mean = sum([y_i*x_i/sum_data for y_i, x_i in zip(data, bincenters)])
-            print('DEBUG: data total_mean = ', total_mean, flush=True)
 
-        middle_of_range = (bins[-1] - bins[0])/2
+        middle_of_range = bins[0] + (bins[-1] - bins[0])/2
 
         leg_loc = 'upper left'
         if total_mean < middle_of_range:
