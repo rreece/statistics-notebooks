@@ -186,7 +186,7 @@ def hist1d(bins,
         fig, ax1 = plt.subplots(figsize=figsize)
 
     if yscale:
-        ax1.set_yscale('log')
+        ax1.set_yscale(yscale)
 
     axes = list()
     axes.append(ax1)
