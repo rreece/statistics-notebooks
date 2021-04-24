@@ -49,6 +49,9 @@ def clopper_pearson(k, n, cl):
 #------------------------------------------------
 
 def make_model(bkg_data, bkg_uncerts, signal_data):
+    """
+    TODO
+    """
     model = pyhf.simplemodels.hepdata_like(signal_data=signal_data,
                                            bkg_data=bkg_data,
                                            bkg_uncerts=bkg_uncerts)
@@ -56,6 +59,26 @@ def make_model(bkg_data, bkg_uncerts, signal_data):
 
 
 def hypo_test(model, data, mu=1.0, init_pars=None, par_bounds=None):
+    """
+    Perform a Neyman-Pearson hypothesis test and return
+    the observed and expected p-values (with the CLs correction).
+
+    Args:
+        model (pyhf.pdf.Model): pyhf model of the background and a single
+                signal.
+        data (list of numpy.int64): List of the observed data in bins.
+        mu (float): Signal strength parameter.
+        init_pars (tensor): The starting values of the model
+                parameters for minimization.
+        par_bounds (tensor): The extrema of values the model parameters are
+                allowed to reach in the fit. The shape should be (n, 2) for
+                n model parameters.
+
+    Returns: CLs_obs, CLs_exp_band
+        CLs_obs (scalar ndarray): observed CLs
+        CLs_exp_band (list of 5 scalar ndarrays): [-2 sigma, -1 sigma, expected,
+            +1 sigma, +2 sigma]
+    """
     if init_pars is None:
         init_pars = model.config.suggested_init()
     if par_bounds is None:
@@ -76,6 +99,28 @@ def hypo_test_scan(model,
                    mu_bounds=None,
                    mu_step=0.1,
                    ):
+    """
+    Perform a scan of Neyman-Pearson hypothesis tests and return
+    the observed and expected p-values (with the CLs correction).
+
+    TODO
+    Args:
+        model (pyhf.pdf.Model): pyhf model of the background and a single
+                signal.
+        data (list of numpy.int64): List of the observed data in bins.
+        mu (float): Signal strength parameter.
+        init_pars (tensor): The starting values of the model
+                parameters for minimization.
+        par_bounds (tensor): The extrema of values the model parameters are
+                allowed to reach in the fit. The shape should be (n, 2) for
+                n model parameters.
+
+    TODO
+    Returns: CLs_obs, CLs_exp_band
+        CLs_obs (scalar ndarray): observed CLs
+        CLs_exp_band (list of 5 scalar ndarrays): [-2 sigma, -1 sigma, expected,
+            +1 sigma, +2 sigma]
+    """
     par_bounds = model.config.suggested_bounds()
     if mu_bounds is None:
         mu_bounds = par_bounds[model.config.poi_index]
@@ -96,6 +141,9 @@ def hypo_test_scan(model,
 
 
 def invert_interval(hypo_tests, test_mus, test_size=0.05):
+    """
+    TODO
+    """
     cls_exp = [np.array([test[1][i] for test in hypo_tests]).flatten() for i in range(5)]
     cls_obs = np.array([test[0] for test in hypo_tests]).flatten()
     crossing_test_stats = {'exp': [], 'obs': None}

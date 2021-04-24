@@ -12,6 +12,11 @@ Launching a jupyter notebook server
 
     jupyter notebook --no-browser --port=8000
 
+Adding [ipyparallel](https://github.com/ipython/ipyparallel)
+
+    pip3 install ipyparallel
+    ipcluster nbextension enable --user
+
 
 Author
 -------------------------------------------------------------------------------
