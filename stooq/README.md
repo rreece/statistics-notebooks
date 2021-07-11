@@ -1,4 +1,4 @@
-Downloaded data from https://stooq.com/db/h/
+Downloaded data from <https://stooq.com/db/h/>
 on 2021-07-11.
 
     d_macro_txt.zip
