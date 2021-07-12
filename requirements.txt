@@ -25,6 +25,7 @@ mplhep
 pyhf
 tabulate
 mplfinance
+pandas_ta
 
 ## DEEP LEARNING
 #tensorflow==1.9.0
