@@ -62,14 +62,6 @@ if [ ! -d python/hepplot ]; then
     cd ..
 fi
 
-## https://github.com/datamllab/rlcard
-#if [ ! -d python/rlcard ]; then
-#    echo "Installing rlcard..."
-#    cd python
-#    git clone git@github.com:datamllab/rlcard.git
-#    cd ..
-#fi
-
 
 #-----------------------------------------------------------------------------
 # setup paths
@@ -96,3 +88,4 @@ echo ""
 echo "On your local machine, you should port-forward:"
 echo "ssh -NfL 7000:localhost:7000 ryan@192.168.50.77"
 echo ""
+
