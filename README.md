@@ -1,6 +1,8 @@
 statistics-notebooks
 ===============================================================================
 
+[![CI badge](https://github.com/rreece/statistics-notebooks/actions/workflows/ci.yml/badge.svg)](https://github.com/rreece/statistics-notebooks/actions)
+
 Introduction
 -------------------------------------------------------------------------------
 
