@@ -54,13 +54,13 @@ if [ ! -d python ]; then
     mkdir python
 fi
 
-# rreece/hepplot
-if [ ! -d python/hepplot ]; then
-    echo "Installing hepplot..."
-    cd python
-    git clone git@github.com:rreece/hepplot.git
-    cd ..
-fi
+## rreece/hepplot
+#if [ ! -d python/hepplot ]; then
+#    echo "Installing hepplot..."
+#    cd python
+#    git clone git@github.com:rreece/hepplot.git
+#    cd ..
+#fi
 
 
 #-----------------------------------------------------------------------------
