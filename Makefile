@@ -1,8 +1,9 @@
-# Makefile for poker-notebooks
+# Makefile for statistics-notebooks
 
 VENV_NAME := .venv
+CODE_DIRS := python tests
 
-.PHONY: all install clean realclean test testclean lint
+.PHONY: all install clean realclean test testclean lint blackcheck
 
 all: lint install
 
@@ -29,4 +30,7 @@ testclean:
 	find tests -type d -name .pytest_cache -exec rm -rfv {} +
 
 lint:
-	if [ -d python ]; then 	flake8 python tests --count --select=E9,F63,F7,F82 --show-source --statistics; fi
+	flake8 $(CODE_DIRS) --count --select=E9,F63,F7,F82 --show-source --statistics
+
+blackcheck:
+	find $(CODE_DIRS) -name \*\.py | xargs black --check
