@@ -24,14 +24,12 @@ you should port-forward:
     ssh -NfL 8000:localhost:8000 ryan@192.168.11.22
 
 
-See also
+Docs
 -------------------------------------------------------------------------------
 
--   [My statistics notes](http://rreece.github.io/outline-of-philosophy/statistics.html)
--   <https://scikit-hep.org/pyhf/>
--   <https://github.com/scikit-hep/pyhf>
--   <https://github.com/diana-hep/pyhf>
--   <https://github.com/matthewfeickert/Statistics-Notes>
+[docs/](docs/)
+
+-   [TODOs](docs/todos.md)
 
 
 Author
@@ -39,3 +37,4 @@ Author
 
 Ryan Reece ([@rreece](https://github.com/rreece))            
 Created: October 26, 2018
+
