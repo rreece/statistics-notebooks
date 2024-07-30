@@ -4,13 +4,10 @@ Development of this software:
 
 -   [TODOs](todos.md)
 
-My notes:
-
--   [Statistics notes](http://rreece.github.io/outline-of-philosophy/statistics.html)
-
 
 ## See also
 
+-   [My statistics notes](http://rreece.github.io/outline-of-philosophy/statistics.html)
 -   <https://scikit-hep.org/pyhf/>
 -   <https://github.com/scikit-hep/pyhf>
 -   <https://github.com/diana-hep/pyhf>
