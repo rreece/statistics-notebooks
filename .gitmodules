@@ -1,0 +1,3 @@
+[submodule "python/hepplot"]
+	path = python/hepplot
+	url = https://github.com/rreece/hepplot
