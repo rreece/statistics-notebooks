@@ -42,25 +42,8 @@ else
     source ${venv_name}/bin/activate
     pip install --upgrade pip
     pip install -r requirements.txt
+    git submodule update --init --recursive
 fi
-
-
-##-----------------------------------------------------------------------------
-## install other packages
-##-----------------------------------------------------------------------------
-
-if [ ! -d python ]; then
-    echo "mkdir python"
-    mkdir python
-fi
-
-## rreece/hepplot
-#if [ ! -d python/hepplot ]; then
-#    echo "Installing hepplot..."
-#    cd python
-#    git clone git@github.com:rreece/hepplot.git
-#    cd ..
-#fi
 
 
 #-----------------------------------------------------------------------------
