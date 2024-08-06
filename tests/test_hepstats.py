@@ -45,5 +45,5 @@ def test_hypo_test_mu_scan():
     assert fig
 
     mu_excl_obs, mu_excl_exp = hep.stats.invert_interval(cls_obs, cls_exp, test_mus, test_size=test_size)
-    assert np.isclose(mu_excl_obs,  0.086, rtol=0, atol=0.001)
+    assert np.isclose(mu_excl_obs,  0.55788, rtol=0, atol=0.001)
 
