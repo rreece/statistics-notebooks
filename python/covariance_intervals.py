@@ -52,9 +52,11 @@ def covariance_confidence_intervals(
         z_score = stats.norm.ppf(1 - half_alpha)
         se_matrix = np.zeros((n_features, n_features))
         
+        # Standard error calculated from Wishart variance
+        # Var(V_ij) = (V_ii V_jj + V_ij^2) / (n-1)
+        # se_ij = sqrt( Var(V_ij) )
         for i in range(n_features):
             for j in range(n_features):
-                # Corrected variance formula using (n-1)
                 se_matrix[i,j] = np.sqrt(
                     (cov_matrix[i,i] * cov_matrix[j,j] + 
                      cov_matrix[i,j]**2) / (n_samples - 1)
@@ -129,15 +131,13 @@ def compare_methods(
         print("upper:")
         print(covariance_upper)
 
+    return results
+
 
 def main():
     # Generate sample data
     n_samples = 1000
-#    n_samples = 5000
     n_features = 3
-#    true_cov = np.array([[1.0, 0.5, 0.3],
-#                         [0.5, 1.0, 0.2],
-#                         [0.3, 0.2, 1.0]])
     true_cov = np.array([[1.0, 0.5, 0.3],
                          [0.5, 1.0, -0.2],
                          [0.3, -0.2, 1.0]])
@@ -146,9 +146,41 @@ def main():
                                    size=n_samples)
 
     # Compare all methods
-    compare_methods(data)
+    confidence_level = 0.95
+    compare_methods(data, confidence_level=confidence_level)
+
+
+def main_coverage_test():
+    n_samples = 1000
+    n_features = 3
+    true_cov = np.array([[1.0, 0.5, 0.3],
+                         [0.5, 1.0, -0.2],
+                         [0.3, -0.2, 1.0]])
+
+    n_experiments = 200
+    n_accept = np.zeros((n_features, n_features))
+
+    for _ in range(n_experiments):
+        # Generate sample data
+        data = np.random.multivariate_normal(mean=np.zeros(n_features),
+                                       cov=true_cov,
+                                       size=n_samples)
+
+        # Calculate covariance and confidence intervals
+        confidence_level = 0.95
+        method = "normal"
+        covariance, covariance_lower, covariance_upper = covariance_confidence_intervals(data, confidence_level, method)
+
+        # Check coverage
+        accepts = np.where( (covariance_lower < true_cov) & (true_cov < covariance_upper), 1, 0)
+        n_accept += accepts
+
+    coverage = n_accept / n_experiments
+    print("coverage =")
+    print(coverage)
 
 
 if __name__ == "__main__":
     main()
+#    main_coverage_test()
 
