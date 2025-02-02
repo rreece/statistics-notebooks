@@ -1,20 +1,25 @@
 """
-Generated in conversation with Claude AI: Claude 3.5 Sonnet
-Jan 2025
+Based on initial generated versions in conversation with
+Claude AI: Claude 3.5 Sonnet
+Feb 1, 2025
 """
 
 import numpy as np
 from scipy import stats
 from typing import Tuple, Optional
 
+
+np.random.seed(42)
+np.set_printoptions(precision=3, suppress=True)
+
+
 def covariance_confidence_intervals(
     data: np.ndarray,
     confidence_level: float = 0.95,
-    method: str = 'asymptotic',
-    n_bootstrap: int = 1000
+    method: str = 'normal',
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
-    Calculate confidence intervals for sample covariance matrix.
+    Calculate confidence intervals for sample covariance matrix using unbiased estimators.
     
     Parameters:
     -----------
@@ -23,9 +28,7 @@ def covariance_confidence_intervals(
     confidence_level : float
         Confidence level (default: 0.95)
     method : str
-        Method to use ('asymptotic' or 'bootstrap')
-    n_bootstrap : int
-        Number of bootstrap samples if using bootstrap method
+        Method to use ('normal', 'wishart', or 'bootstrap')
         
     Returns:
     --------
@@ -37,25 +40,53 @@ def covariance_confidence_intervals(
         Upper bounds of confidence intervals
     """
     n_samples, n_features = data.shape
-    cov_matrix = np.cov(data, rowvar=False)
+    # Using n-1 for unbiased estimation
+    cov_matrix = np.cov(data, rowvar=False, bias=False)  # bias=False uses n-1
+    alpha = 1.0 - confidence_level
+    half_alpha = alpha/2.0
+
+    assert np.isclose((1 + confidence_level) / 2, 1 - half_alpha, rtol=0, atol=1e-5)
     
-    if method == 'asymptotic':
-        # Calculate standard errors using asymptotic formula
-        z_score = stats.norm.ppf((1 + confidence_level) / 2)
+    if method == 'normal':
+        # Calculate standard errors using asymptotic formula with n-1 correction
+        z_score = stats.norm.ppf(1 - half_alpha)
         se_matrix = np.zeros((n_features, n_features))
         
         for i in range(n_features):
             for j in range(n_features):
+                # Corrected variance formula using (n-1)
                 se_matrix[i,j] = np.sqrt(
                     (cov_matrix[i,i] * cov_matrix[j,j] + 
-                     cov_matrix[i,j]**2) / n_samples
+                     cov_matrix[i,j]**2) / (n_samples - 1)
                 )
         
         ci_lower = cov_matrix - z_score * se_matrix
         ci_upper = cov_matrix + z_score * se_matrix
+
+    elif method == 'wishart':
+        # Using Wishart distribution
+        # Initialize Wishart distribution with scale matrix S/(df)
+        # Scale matrix is S/(df) because wishart.rvs returns W/df where W ~ W_p(df, scale)
+        dof = n_samples - 1
+        wishart_dist = stats.wishart(df=dof, scale=cov_matrix/dof)
+
+        # Generate samples to estimate quantiles
+        n_samples_wishart = 10000
+        wishart_samples = wishart_dist.rvs(n_samples_wishart)
+
+        # Calculate element-wise quantiles
+        ci_lower = np.zeros((n_features, n_features))
+        ci_upper = np.zeros((n_features, n_features))
+
+        for i in range(n_features):
+            for j in range(n_features):
+                samples_ij = wishart_samples[:, i, j]
+                ci_lower[i, j] = np.percentile(samples_ij, 100 * half_alpha)
+                ci_upper[i, j] = np.percentile(samples_ij, 100 * (1 - half_alpha))
         
     elif method == 'bootstrap':
-        # Bootstrap approach
+        # Bootstrap approach (np.cov already uses n-1 by default)
+        n_bootstrap = 1000
         bootstrap_covs = np.zeros((n_bootstrap, n_features, n_features))
         
         for i in range(n_bootstrap):
@@ -63,37 +94,61 @@ def covariance_confidence_intervals(
                 n_samples, size=n_samples, replace=True
             )
             bootstrap_sample = data[bootstrap_indices]
-            bootstrap_covs[i] = np.cov(bootstrap_sample, rowvar=False)
+            bootstrap_covs[i] = np.cov(bootstrap_sample, rowvar=False, bias=False)
         
         # Calculate percentile intervals
-        alpha = (1 - confidence_level) / 2
-        ci_lower = np.percentile(bootstrap_covs, 100 * alpha, axis=0)
-        ci_upper = np.percentile(bootstrap_covs, 100 * (1 - alpha), axis=0)
+        ci_lower = np.percentile(bootstrap_covs, 100 * half_alpha, axis=0)
+        ci_upper = np.percentile(bootstrap_covs, 100 * (1 - half_alpha), axis=0)
     
     else:
-        raise ValueError("Method must be either 'asymptotic' or 'bootstrap'")
+        raise ValueError("Method must be either 'normal', 'wishart', or 'bootstrap'")
         
     return cov_matrix, ci_lower, ci_upper
 
-def format_results(
-    cov_matrix: np.ndarray,
-    ci_lower: np.ndarray,
-    ci_upper: np.ndarray,
-    feature_names: Optional[list] = None
-) -> None:
+
+def compare_methods(
+    data: np.ndarray,
+    confidence_level: float = 0.95,
+):
     """
-    Print formatted results of covariance matrix with confidence intervals.
+    Compare normal approximation, Wishart, and bootstrap methods.
     """
-    n_features = cov_matrix.shape[0]
-    if feature_names is None:
-        feature_names = [f"X{i+1}" for i in range(n_features)]
-        
-    print("Covariance Matrix with Confidence Intervals:")
-    print("-" * 50)
-    
-    for i in range(n_features):
-        for j in range(i + 1):
-            print(f"{feature_names[i]} - {feature_names[j]}:")
-            print(f"Covariance: {cov_matrix[i,j]:.4f}")
-            print(f"95% CI: [{ci_lower[i,j]:.4f}, {ci_upper[i,j]:.4f}]")
-            print()
+    methods = ["normal", "wishart", "bootstrap"]
+
+    results = dict()
+    for method in methods:
+        results[method] = covariance_confidence_intervals(data, confidence_level, method)
+
+    # Print results
+    for method in methods:
+        print(f"\n{method} method estimate:")
+        covariance, covariance_lower, covariance_upper = results[method]
+        print(covariance)
+        print("lower:")
+        print(covariance_lower)
+        print("upper:")
+        print(covariance_upper)
+
+
+def main():
+    # Generate sample data
+    n_samples = 1000
+#    n_samples = 5000
+    n_features = 3
+#    true_cov = np.array([[1.0, 0.5, 0.3],
+#                         [0.5, 1.0, 0.2],
+#                         [0.3, 0.2, 1.0]])
+    true_cov = np.array([[1.0, 0.5, 0.3],
+                         [0.5, 1.0, -0.2],
+                         [0.3, -0.2, 1.0]])
+    data = np.random.multivariate_normal(mean=np.zeros(n_features),
+                                   cov=true_cov,
+                                   size=n_samples)
+
+    # Compare all methods
+    compare_methods(data)
+
+
+if __name__ == "__main__":
+    main()
+
