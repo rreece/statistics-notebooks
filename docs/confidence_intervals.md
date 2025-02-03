@@ -83,14 +83,14 @@ $$ W_{1}(1, n) = \chi^{2}_{n} $$
 
 Variance of Wishart:
 
-$$ n ( V_{ii} V_{jj} + V_{ij}^{2} ) $$
+$$ n \cdot ( V_{ii} V_{jj} + V_{ij}^{2} ) $$
 
 
 ## Confidence intervals for sample covariance
 
 Unbiased estimator of variance of scatter matrix:
 
-$$ \mathrm{Var}(\hat{S}) = (n-1) ( V_{ii} V_{jj} + V_{ij}^{2} ) $$
+$$ \hat{\mathrm{Var}}(S) = (n-1) ( V_{ii} V_{jj} + V_{ij}^{2} ) $$
 
 Sample covariance matrix:
 
