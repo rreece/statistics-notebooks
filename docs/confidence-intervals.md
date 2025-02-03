@@ -75,9 +75,7 @@ If $X \sim N_{p}(0, V)$ then $S \sim W_{p}(V, n)$.
 
 If $X \sim N_{p}(\mu, V)$ then $S \sim W_{p}(V, n-1)$.
 
-If $p=1$ and $V=1$, then Wishart is $\chi^{2}_{n}$.
-
-$$ W_{1}(1, n) = \chi^{2}_{n} $$
+If $p=1$ and $V=1$, then Wishart is $\chi^{2}_{n}$, W_{1}(1, n) = \chi^{2}_{n}$.
 
 Variance of Wishart:
 
