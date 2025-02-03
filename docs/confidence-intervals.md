@@ -32,12 +32,6 @@ and
 $$ \frac{(n-1) s^2}{\sigma^2} \sim \chi^{2}_{n-1} $$
 
 
-TODO:
-
--   Quantiles of $\chi^2 \Rightarrow$ $p$-values [Table](https://math.arizona.edu/~jwatkins/chi-square-table.pdf)
--   Multivariate case
-
-
 ## Quantiles to p-values
 
 Cumulative distribution function:
@@ -65,6 +59,10 @@ $$ 1 - \frac{\alpha}{2} = \int_{q_{\alpha}^\mathrm{lower}}^{\infty} f(q) dq = \b
 $$ q_{\alpha}^\mathrm{upper} = F^{-1}(1 - \frac{\alpha}{2}) = \mathrm{ppf}(1 - \frac{\alpha}{2}) $$
 
 $$ q_{\alpha}^\mathrm{lower} = F^{-1}(\frac{\alpha}{2}) = \mathrm{ppf}(\frac{\alpha}{2}) $$
+
+See also:
+
+-   Quantiles of $\chi^2 \Rightarrow$ $p$-values [Table](https://math.arizona.edu/~jwatkins/chi-square-table.pdf)
 
 
 ## Wishart distribution
