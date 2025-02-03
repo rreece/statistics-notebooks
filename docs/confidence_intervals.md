@@ -90,7 +90,7 @@ $$ n \cdot ( V_{ii} V_{jj} + V_{ij}^{2} ) $$
 
 Unbiased estimator of variance of scatter matrix:
 
-$$ \hat{\mathrm{Var}}(S) = (n-1) ( V_{ii} V_{jj} + V_{ij}^{2} ) $$
+$$ \mathrm{Var}(\hat{S}) = (n-1) ( V_{ii} V_{jj} + V_{ij}^{2} ) $$
 
 Sample covariance matrix:
 
