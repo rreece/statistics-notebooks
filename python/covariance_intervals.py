@@ -4,16 +4,13 @@ Claude AI: Claude 3.5 Sonnet
 Feb 1, 2025
 """
 
+import math
 import numpy as np
 from scipy import stats
 from typing import Tuple, Optional
 
 
-np.random.seed(42)
-np.set_printoptions(precision=3, suppress=True)
-
-
-def covariance_confidence_intervals(
+def calc_covariance_intervals(
     data: np.ndarray,
     confidence_level: float = 0.95,
     method: str = 'normal',
@@ -43,13 +40,10 @@ def covariance_confidence_intervals(
     # Using n-1 for unbiased estimation
     cov_matrix = np.cov(data, rowvar=False, bias=False)  # bias=False uses n-1
     alpha = 1.0 - confidence_level
-    half_alpha = alpha/2.0
 
-    assert np.isclose((1 + confidence_level) / 2, 1 - half_alpha, rtol=0, atol=1e-5)
-    
     if method == 'normal':
         # Calculate standard errors using asymptotic formula with n-1 correction
-        z_score = stats.norm.ppf(1 - half_alpha)
+        z_score = stats.norm.ppf(1 - alpha/2)
         se_matrix = np.zeros((n_features, n_features))
         
         # Standard error calculated from Wishart variance
@@ -76,15 +70,15 @@ def covariance_confidence_intervals(
         n_samples_wishart = 10000
         wishart_samples = wishart_dist.rvs(n_samples_wishart)
 
-        # Calculate element-wise quantiles
+        # Calculate element-wise quantiles (ppf)
         ci_lower = np.zeros((n_features, n_features))
         ci_upper = np.zeros((n_features, n_features))
 
         for i in range(n_features):
             for j in range(n_features):
                 samples_ij = wishart_samples[:, i, j]
-                ci_lower[i, j] = np.percentile(samples_ij, 100 * half_alpha)
-                ci_upper[i, j] = np.percentile(samples_ij, 100 * (1 - half_alpha))
+                ci_lower[i, j] = np.percentile(samples_ij, 100 * alpha/2)
+                ci_upper[i, j] = np.percentile(samples_ij, 100 * (1 - alpha/2))
         
     elif method == 'bootstrap':
         # Bootstrap approach (np.cov already uses n-1 by default)
@@ -99,8 +93,8 @@ def covariance_confidence_intervals(
             bootstrap_covs[i] = np.cov(bootstrap_sample, rowvar=False, bias=False)
         
         # Calculate percentile intervals
-        ci_lower = np.percentile(bootstrap_covs, 100 * half_alpha, axis=0)
-        ci_upper = np.percentile(bootstrap_covs, 100 * (1 - half_alpha), axis=0)
+        ci_lower = np.percentile(bootstrap_covs, 100 * alpha/2, axis=0)
+        ci_upper = np.percentile(bootstrap_covs, 100 * (1 - alpha/2), axis=0)
     
     else:
         raise ValueError("Method must be either 'normal', 'wishart', or 'bootstrap'")
@@ -119,7 +113,7 @@ def compare_methods(
 
     results = dict()
     for method in methods:
-        results[method] = covariance_confidence_intervals(data, confidence_level, method)
+        results[method] = calc_covariance_intervals(data, confidence_level, method)
 
     # Print results
     for method in methods:
@@ -134,13 +128,39 @@ def compare_methods(
     return results
 
 
+def run_coverage_test(confidence_level=0.95, n_toys=200, method="normal"):
+    n_samples = 1000
+    n_features = 3
+    true_cov = np.array([[0.010,  0.005,  0.003],
+                         [0.005,  0.020, -0.002],
+                         [0.003, -0.002,  0.030]])
+
+    n_accept = np.zeros((n_features, n_features))
+
+    for _ in range(n_toys):
+        # Generate sample data
+        data = np.random.multivariate_normal(mean=np.zeros(n_features),
+                                       cov=true_cov,
+                                       size=n_samples)
+
+        # Calculate covariance and confidence intervals
+        covariance, covariance_lower, covariance_upper = calc_covariance_intervals(data, confidence_level, method)
+
+        # Check coverage
+        accepts = np.where( (covariance_lower < true_cov) & (true_cov < covariance_upper), 1, 0)
+        n_accept += accepts
+
+    coverage = n_accept / n_toys
+    return coverage
+
+
 def main():
     # Generate sample data
     n_samples = 1000
     n_features = 3
-    true_cov = np.array([[1.0, 0.5, 0.3],
-                         [0.5, 1.0, -0.2],
-                         [0.3, -0.2, 1.0]])
+    true_cov = np.array([[0.010,  0.005,  0.003],
+                         [0.005,  0.020, -0.002],
+                         [0.003, -0.002,  0.030]])
     data = np.random.multivariate_normal(mean=np.zeros(n_features),
                                    cov=true_cov,
                                    size=n_samples)
@@ -151,36 +171,65 @@ def main():
 
 
 def main_coverage_test():
-    n_samples = 1000
-    n_features = 3
-    true_cov = np.array([[1.0, 0.5, 0.3],
-                         [0.5, 1.0, -0.2],
-                         [0.3, -0.2, 1.0]])
 
-    n_experiments = 200
-    n_accept = np.zeros((n_features, n_features))
+    import matplotlib.pyplot as plt
 
-    for _ in range(n_experiments):
-        # Generate sample data
-        data = np.random.multivariate_normal(mean=np.zeros(n_features),
-                                       cov=true_cov,
-                                       size=n_samples)
+    import hepplot as hep
 
-        # Calculate covariance and confidence intervals
-        confidence_level = 0.95
-        method = "normal"
-        covariance, covariance_lower, covariance_upper = covariance_confidence_intervals(data, confidence_level, method)
+    # F(z) = Phi(z) = (1/2) * (1 + erf(z/sqrt(2)))
+    # Phi(z) = (1 - alpha/2)   For two-sided
+    # alpha = 2*(1 - Phi(z))
+    #       = 2*(1 - 0.5*(1+math.erf(z/math.sqrt(2))))
+    def _z_to_alpha(z):
+        return 2*(1 - 0.5*(1+math.erf(z/math.sqrt(2))))
 
-        # Check coverage
-        accepts = np.where( (covariance_lower < true_cov) & (true_cov < covariance_upper), 1, 0)
-        n_accept += accepts
+    alphas = [ _z_to_alpha(_z) for _z in [1, 2, 3, 4] ]
+    confidence_levels = [ 1.0 - _a for _a in alphas ]
+    print(alphas)
+    print(confidence_levels)
 
-    coverage = n_accept / n_experiments
-    print("coverage =")
-    print(coverage)
+    n_toys = 1000
+#    n_toys = 10000
+
+    # normal method experiments 
+    normal_coverages = list()
+    for cl in confidence_levels:
+        coverage = run_coverage_test(confidence_level=cl, n_toys=n_toys, method="normal")
+        avg_coverage = np.average(coverage)
+        normal_coverages.append(avg_coverage)
+
+    normal_coverage_alphas = [ 1.0 - _c for _c in normal_coverages ]
+    print(normal_coverage_alphas)
+
+    # wishart method experiments 
+    wishart_coverages = list()
+    for cl in confidence_levels:
+        coverage = run_coverage_test(confidence_level=cl, n_toys=n_toys, method="wishart")
+        avg_coverage = np.average(coverage)
+        wishart_coverages.append(avg_coverage)
+
+    wishart_coverage_alphas = [ 1.0 - _c for _c in wishart_coverages ]
+    print(wishart_coverage_alphas)
+
+    # make coverage plot
+    fig, ax = plt.subplots(figsize=(8, 8))
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlabel(r"$\alpha = 1 - p_\mathrm{CL}$")
+    ax.set_ylabel(r"$\alpha_\mathrm{coverage} = 1 - p_\mathrm{coverage}$")
+    ax.plot(alphas, alphas, color="darkgray", label="Perfect calibration")
+    ax.plot(alphas, normal_coverage_alphas, marker='o', color="#1f77b4", label="Asymptotic interval")
+    ax.plot(alphas, wishart_coverage_alphas, marker='o', color="red", label="Wishart interval")
+    legend = ax.legend(loc="upper left")
+    plt.tight_layout()
+    plt.savefig("coverage.pdf")
+    plt.savefig("coverage.png")
 
 
 if __name__ == "__main__":
+    np.random.seed(42)
+    np.set_printoptions(precision=4, suppress=True)
+
     main()
 #    main_coverage_test()
 
