@@ -27,9 +27,11 @@ you should port-forward:
 Docs
 -------------------------------------------------------------------------------
 
--   [TODOs](docs/todos.md)
+See [docs/](docs/) for
 
-The notes and results in: [docs/](docs/)
+-   [TODOs](docs/todos.md)
+-   [Notes](docs/)
+-   [Results](docs/)
 
 
 Author
