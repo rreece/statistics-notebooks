@@ -7,7 +7,7 @@
 
 ## Cochran's theorem
 
-$$ \frac{n \, \hat{\sigma}^2}{\sigma^2} \sim \chi^{2}_{n-1} $$
+$$ \frac{n \hat{\sigma}^2}{\sigma^2} \sim \chi^{2}_{n-1} $$
 
 where the MLEs for a normal distribution are
 
@@ -25,11 +25,11 @@ $$ s^2 = \frac{1}{(n-1)} \sum_{i=1}^{n} ( x_i - \hat{\mu} )^2  $$
 
 So
 
-$$ s^2 = \frac{n}{(n-1)} \, \hat{\sigma}^2 $$
+$$ s^2 = \frac{n}{(n-1)} \hat{\sigma}^2 $$
 
 and
 
-$$ \frac{(n-1) \, s^2}{\sigma^2} \sim \chi^{2}_{n-1} $$
+$$ \frac{(n-1) s^2}{\sigma^2} \sim \chi^{2}_{n-1} $$
 
 
 TODO:
@@ -42,13 +42,13 @@ TODO:
 
 Cumulative distribution function:
 
-$$ F(y) = \int_{-\infty}^{y} f(x) \, dx $$
+$$ F(y) = \int_{-\infty}^{y} f(x) dx $$
 
-$$ \bar{F}(y) = 1 - F(y) = \int_{y}^{\infty} f(x) \, dx $$
+$$ \bar{F}(y) = 1 - F(y) = \int_{y}^{\infty} f(x) dx $$
 
 $p$-value from test statistic $q$:
 
-$$ p = 1 - \alpha = \int_{-\infty}^{q_{\alpha}} f(q) \, dq = F(q(\alpha))$$
+$$ p = 1 - \alpha = \int_{-\infty}^{q_{\alpha}} f(q) dq = F(q(\alpha))$$
 
 Critical value of test statistic for a given $p$-value:
 
@@ -56,11 +56,11 @@ $$ q_{\alpha} = F^{-1}(1 - \alpha) = \mathrm{ppf}(1 - \alpha) $$
 
 Two sided:
 
-$$ 1 - \alpha = \int_{q_{\alpha}^\mathrm{lower}}^{q_{\alpha}^\mathrm{upper}} f(q) \, dq $$
+$$ 1 - \alpha = \int_{q_{\alpha}^\mathrm{lower}}^{q_{\alpha}^\mathrm{upper}} f(q) dq $$
 
-$$ 1 - \frac{\alpha}{2} = \int_{-\infty}^{q_{\alpha}^\mathrm{upper}} f(q) \, dq = F(q_{\alpha}^\mathrm{upper}) $$
+$$ 1 - \frac{\alpha}{2} = \int_{-\infty}^{q_{\alpha}^\mathrm{upper}} f(q) dq = F(q_{\alpha}^\mathrm{upper}) $$
 
-$$ 1 - \frac{\alpha}{2} = \int_{q_{\alpha}^\mathrm{lower}}^{\infty} f(q) \, dq = \bar{F}(q_{\alpha}^\mathrm{lower}) = 1 - F(q_{\alpha}^\mathrm{lower}) $$
+$$ 1 - \frac{\alpha}{2} = \int_{q_{\alpha}^\mathrm{lower}}^{\infty} f(q) dq = \bar{F}(q_{\alpha}^\mathrm{lower}) = 1 - F(q_{\alpha}^\mathrm{lower}) $$
 
 $$ q_{\alpha}^\mathrm{upper} = F^{-1}(1 - \frac{\alpha}{2}) = \mathrm{ppf}(1 - \frac{\alpha}{2}) $$
 
@@ -83,7 +83,7 @@ $$ W_{1}(1, n) = \chi^{2}_{n} $$
 
 Variance of Wishart:
 
-$$ n \, ( V_{ii} V_{jj} + V_{ij}^{2} ) $$
+$$ n ( V_{ii} V_{jj} + V_{ij}^{2} ) $$
 
 
 ## Confidence intervals for sample covariance
@@ -106,7 +106,7 @@ $$ \hat{\sigma}_{ij} = \sqrt{\frac{1}{n-1} ( \hat{V}_{ii} \hat{V}_{jj} + \hat{V}
 
 and we have a frequentist confidence interval:
 
-$$ V_{ij} = \hat{V}_{ij} \pm z_{\alpha} \, \hat{\sigma}_{ij} $$
+$$ V_{ij} = \hat{V}_{ij} \pm z_{\alpha} \hat{\sigma}_{ij} $$
 
 at a confidence level picked by the two-sided $z$ score:
 
@@ -114,7 +114,7 @@ $$ z_{\alpha} = \Phi^{-1}\left(1 - \frac{\alpha}{2}\right) $$
 
 because
 
-$$ \Phi(z) = \int_{-\infty}^{z} \phi(x) \, dx  = 1 - \frac{\alpha}{2} $$
+$$ \Phi(z) = \int_{-\infty}^{z} \phi(x) dx  = 1 - \frac{\alpha}{2} $$
 
 where
 
@@ -122,7 +122,7 @@ $$ \phi(x) = \frac{1}{\sqrt{2\pi}} e^{x^2/2} $$
 
 The one-sided formula is
 
-$$ \Phi(z) = \int_{-\infty}^{z} \phi(x) \, dx  = 1 - \alpha $$
+$$ \Phi(z) = \int_{-\infty}^{z} \phi(x) dx  = 1 - \alpha $$
 
 Instead of using quantiles of the normal distribution we could use the quantiles of the Wishart distribution more directly.
 
