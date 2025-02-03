@@ -4,6 +4,13 @@ Development of this software:
 
 -   [TODOs](todos.md)
 
+Notes:
+
+-   [Confidence intervals](confidence-intervals.md)
+
+Results:
+
+-   [2025-02-02](results-2025-02-02.md) - Monte Carlo coverage tests for covariance confidence intervals
 
 ## See also
 
