@@ -4,6 +4,7 @@ Claude AI: Claude 3.5 Sonnet
 Feb 1, 2025
 """
 
+import math
 import numpy as np
 from scipy import stats
 from typing import Tuple, Optional
@@ -127,10 +128,33 @@ def compare_methods(
     return results
 
 
-def main():
-    np.random.seed(42)
-    np.set_printoptions(precision=4, suppress=True)
+def run_coverage_test(confidence_level=0.95, n_toys=200, method="normal"):
+    n_samples = 1000
+    n_features = 3
+    true_cov = np.array([[0.010,  0.005,  0.003],
+                         [0.005,  0.020, -0.002],
+                         [0.003, -0.002,  0.030]])
 
+    n_accept = np.zeros((n_features, n_features))
+
+    for _ in range(n_toys):
+        # Generate sample data
+        data = np.random.multivariate_normal(mean=np.zeros(n_features),
+                                       cov=true_cov,
+                                       size=n_samples)
+
+        # Calculate covariance and confidence intervals
+        covariance, covariance_lower, covariance_upper = calc_covariance_intervals(data, confidence_level, method)
+
+        # Check coverage
+        accepts = np.where( (covariance_lower < true_cov) & (true_cov < covariance_upper), 1, 0)
+        n_accept += accepts
+
+    coverage = n_accept / n_toys
+    return coverage
+
+
+def main():
     # Generate sample data
     n_samples = 1000
     n_features = 3
@@ -147,39 +171,65 @@ def main():
 
 
 def main_coverage_test():
-    np.random.seed(42)
-    np.set_printoptions(precision=4, suppress=True)
 
-    n_samples = 1000
-    n_features = 3
-    true_cov = np.array([[0.010,  0.005,  0.003],
-                         [0.005,  0.020, -0.002],
-                         [0.003, -0.002,  0.030]])
+    import matplotlib.pyplot as plt
 
-    n_experiments = 200
-    n_accept = np.zeros((n_features, n_features))
+    import hepplot as hep
 
-    for _ in range(n_experiments):
-        # Generate sample data
-        data = np.random.multivariate_normal(mean=np.zeros(n_features),
-                                       cov=true_cov,
-                                       size=n_samples)
+    # F(z) = Phi(z) = (1/2) * (1 + erf(z/sqrt(2)))
+    # Phi(z) = (1 - alpha/2)   For two-sided
+    # alpha = 2*(1 - Phi(z))
+    #       = 2*(1 - 0.5*(1+math.erf(z/math.sqrt(2))))
+    def _z_to_alpha(z):
+        return 2*(1 - 0.5*(1+math.erf(z/math.sqrt(2))))
 
-        # Calculate covariance and confidence intervals
-        confidence_level = 0.95
-        method = "normal"
-        covariance, covariance_lower, covariance_upper = calc_covariance_intervals(data, confidence_level, method)
+    alphas = [ _z_to_alpha(_z) for _z in [1, 2, 3, 4] ]
+    confidence_levels = [ 1.0 - _a for _a in alphas ]
+    print(alphas)
+    print(confidence_levels)
 
-        # Check coverage
-        accepts = np.where( (covariance_lower < true_cov) & (true_cov < covariance_upper), 1, 0)
-        n_accept += accepts
+    n_toys = 1000
+#    n_toys = 10000
 
-    coverage = n_accept / n_experiments
-    print("coverage =")
-    print(coverage)
+    # normal method experiments 
+    normal_coverages = list()
+    for cl in confidence_levels:
+        coverage = run_coverage_test(confidence_level=cl, n_toys=n_toys, method="normal")
+        avg_coverage = np.average(coverage)
+        normal_coverages.append(avg_coverage)
+
+    normal_coverage_alphas = [ 1.0 - _c for _c in normal_coverages ]
+    print(normal_coverage_alphas)
+
+    # wishart method experiments 
+    wishart_coverages = list()
+    for cl in confidence_levels:
+        coverage = run_coverage_test(confidence_level=cl, n_toys=n_toys, method="wishart")
+        avg_coverage = np.average(coverage)
+        wishart_coverages.append(avg_coverage)
+
+    wishart_coverage_alphas = [ 1.0 - _c for _c in wishart_coverages ]
+    print(wishart_coverage_alphas)
+
+    # make coverage plot
+    fig, ax = plt.subplots(figsize=(8, 8))
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlabel(r"$\alpha = 1 - p_\mathrm{CL}$")
+    ax.set_ylabel(r"$\alpha_\mathrm{coverage} = 1 - p_\mathrm{coverage}$")
+    ax.plot(alphas, alphas, color="darkgray", label="Perfect calibration")
+    ax.plot(alphas, normal_coverage_alphas, marker='o', color="#1f77b4", label="Asymptotic interval")
+    ax.plot(alphas, wishart_coverage_alphas, marker='o', color="red", label="Wishart interval")
+    legend = ax.legend(loc="upper left")
+    plt.tight_layout()
+    plt.savefig("coverage.pdf")
+    plt.savefig("coverage.png")
 
 
 if __name__ == "__main__":
+    np.random.seed(42)
+    np.set_printoptions(precision=4, suppress=True)
+
     main()
 #    main_coverage_test()
 
