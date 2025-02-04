@@ -15,6 +15,10 @@ import numpy as np
 
 
 def calc_sample_covariance(data, frequency=None):
+    assert False, "Not implemented"
+
+
+def calc_sample_covariance(data, frequency=None):
     covariance = np.cov(data, rowvar=False, bias=False)  # bias=False uses n-1
 
     # TODO: Use frequency
