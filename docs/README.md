@@ -8,7 +8,9 @@ Development of this software
 
 Notes
 
+-   [Linear algebra](linear-algebra.md)
 -   [Confidence intervals](confidence-intervals.md)
+-   [Time series analysis](time-series.md)
 
 Results
 
