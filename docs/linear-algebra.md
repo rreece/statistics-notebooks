@@ -3,14 +3,27 @@
 
 ## Random vectors
 
-If $`\vec{x}`$ is a random vector with $`\mathrm{E}(\vec{x})=\mu`$
-and $`\mathrm{Var}(\vec{x})=\Sigma`$, then
+If $`\vec{x}`$ is a random vector with
 
-$$ \mathrm{E}(A \vec{x}) = A \vec{\mu} $$
+```math
+\mathrm{E}(\vec{x}) = \mu \qquad \mathrm{and} \qquad \mathrm{Var}(\vec{x}) = \Sigma
+```
 
-$$ \mathrm{Var}(A \vec{x}) = A \Sigma A^\intercal $$
+then
 
-$$ \mathrm{E}(\vec{x}^\intercal A \vec{x}) = \vec{\mu}^\intercal A \vec{\mu} + \mathrm{tr}(A\Sigma) $$
+```math
+\mathrm{E}(A \vec{x}) = A \vec{\mu}
+```
 
-$$ \mathrm{Var}(\vec{x}^\intercal A \vec{x}) = ? $$
+```math
+\mathrm{Var}(A \vec{x}) = A \Sigma A^\intercal
+```
+
+```math
+\mathrm{E}(\vec{x}^\intercal A \vec{x}) = \vec{\mu}^\intercal A \vec{\mu} + \mathrm{tr}(A\Sigma)
+```
+
+```math
+\mathrm{Var}(\vec{x}^\intercal A \vec{x}) = ?
+```
 
