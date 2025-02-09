@@ -94,7 +94,9 @@ $$ V = \frac{1}{n-1} S $$
 
 Variance of sample covariance matrix:
 
-$$ \mathrm{Var}(\hat{V}) = \frac{1}{(n-1)^2} \mathrm{Var}(\hat{S}) = \frac{1}{n-1} ( \hat{V}_{ii} \hat{V}_{jj} + \hat{V}_{ij}^{2} ) $$
+```math
+\mathrm{Var}(\hat{V}) = \frac{1}{(n-1)^2} \mathrm{Var}(\hat{S}) = \frac{1}{n-1} ( \hat{V}_{ii} \hat{V}_{jj} + \hat{V}_{ij}^{2} )
+```
 
 Asymptotically assuming the errors are normally distributed:
 
