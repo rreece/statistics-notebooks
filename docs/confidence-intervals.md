@@ -65,6 +65,20 @@ See also:
 -   Quantiles of $\chi^2 \Rightarrow$ $p$-values [Table](https://math.arizona.edu/~jwatkins/chi-square-table.pdf)
 
 
+## Confidence intervals for sample mean
+
+Sample mean:
+
+```math
+\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i
+```
+
+Variance of sample mean:
+
+```math
+\mathrm{Var}(\bar{x}) = \mathrm{Var}\left( \frac{1}{n} \sum_{i=1}^{n} x_i \right) = \frac{1}{n^2} \sum_{i=1}^{n} \mathrm{Var}(x_i) = \frac{1}{n^2} \sum_{i=1}^{n} \sigma^2 = \frac{\sigma^2}{n} 
+```
+
 ## Wishart distribution
 
 Scatter matrix:
