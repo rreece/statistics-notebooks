@@ -7,62 +7,88 @@
 
 ## Cochran's theorem
 
-$$ \frac{n \hat{\sigma}^2}{\sigma^2} \sim \chi^{2}_{n-1} $$
+```math
+\frac{n \hat{\sigma}^2}{\sigma^2} \sim \chi^{2}_{n-1}
+```
 
 where the MLEs for a normal distribution are
 
-$$ \hat{\mu} = \frac{1}{n} \sum_{i=1}^{n} x_i $$
+```math
+\hat{\mu} = \frac{1}{n} \sum_{i=1}^{n} x_i
+```
 
 and
 
-$$ \hat{\sigma}^2 = \frac{1}{n} \sum_{i=1}^{n} ( x_i - \hat{\mu} )^2  $$
+```math
+\hat{\sigma}^2 = \frac{1}{n} \sum_{i=1}^{n} ( x_i - \hat{\mu} )^2
+```
 
 See Wikipedia: [Cochran's theorem](https://en.wikipedia.org/wiki/Cochran%27s_theorem#Estimation_of_variance).
 
 Note the unbiased sample variance is
 
-$$ s^2 = \frac{1}{(n-1)} \sum_{i=1}^{n} ( x_i - \hat{\mu} )^2  $$
+```math
+s^2 = \frac{1}{(n-1)} \sum_{i=1}^{n} ( x_i - \hat{\mu} )^2
+```
 
 So
 
-$$ s^2 = \frac{n}{(n-1)} \hat{\sigma}^2 $$
+```math
+s^2 = \frac{n}{(n-1)} \hat{\sigma}^2
+```
 
 and
 
-$$ \frac{(n-1) s^2}{\sigma^2} \sim \chi^{2}_{n-1} $$
+```math
+\frac{(n-1) s^2}{\sigma^2} \sim \chi^{2}_{n-1}
+```
 
 
 ## Quantiles to p-values
 
 Cumulative distribution function:
 
-$$ F(y) = \int_{-\infty}^{y} f(x) dx $$
+```math
+F(y) = \int_{-\infty}^{y} f(x) dx
+```
 
-$$ \bar{F}(y) = 1 - F(y) = \int_{y}^{\infty} f(x) dx $$
+```math
+\bar{F}(y) = 1 - F(y) = \int_{y}^{\infty} f(x) dx
+```
 
 $p$-value from test statistic $q$:
 
-$$ p = 1 - \alpha = \int_{-\infty}^{q_{\alpha}} f(q) dq = F(q(\alpha))$$
+```math
+p = 1 - \alpha = \int_{-\infty}^{q_{\alpha}} f(q) dq = F(q(\alpha))
+```
 
 Critical value of test statistic for a given $p$-value:
 
-$$ q_{\alpha} = F^{-1}(1 - \alpha) = \mathrm{ppf}(1 - \alpha) $$
+```math
+q_{\alpha} = F^{-1}(1 - \alpha) = \mathrm{ppf}(1 - \alpha)
+```
 
 Two sided:
 
-$$ 1 - \alpha = \int_{q_{\alpha}^\mathrm{lower}}^{q_{\alpha}^\mathrm{upper}} f(q) dq $$
+```math
+1 - \alpha = \int_{q_{\alpha}^\mathrm{lower}}^{q_{\alpha}^\mathrm{upper}} f(q) dq
+```
 
-$$ 1 - \frac{\alpha}{2} = \int_{-\infty}^{q_{\alpha}^\mathrm{upper}} f(q) dq = F(q_{\alpha}^\mathrm{upper}) $$
+```math
+1 - \frac{\alpha}{2} = \int_{-\infty}^{q_{\alpha}^\mathrm{upper}} f(q) dq = F(q_{\alpha}^\mathrm{upper})
+```
 
-$$ 1 - \frac{\alpha}{2} = \int_{q_{\alpha}^\mathrm{lower}}^{\infty} f(q) dq = \bar{F}(q_{\alpha}^\mathrm{lower}) = 1 - F(q_{\alpha}^\mathrm{lower}) $$
+```math
+1 - \frac{\alpha}{2} = \int_{q_{\alpha}^\mathrm{lower}}^{\infty} f(q) dq = \bar{F}(q_{\alpha}^\mathrm{lower}) = 1 - F(q_{\alpha}^\mathrm{lower})
+```
 
-$$ q_{\alpha}^\mathrm{upper} = F^{-1}(1 - \frac{\alpha}{2}) = \mathrm{ppf}(1 - \frac{\alpha}{2}) $$
+```math
+q_{\alpha}^\mathrm{upper} = F^{-1}(1 - \frac{\alpha}{2}) = \mathrm{ppf}(1 - \frac{\alpha}{2})
+```
 
-$$ q_{\alpha}^\mathrm{lower} = F^{-1}(\frac{\alpha}{2}) = \mathrm{ppf}(\frac{\alpha}{2}) $$
-
-See also:
-
--   Quantiles of $\chi^2 \Rightarrow$ $p$-values [Table](https://math.arizona.edu/~jwatkins/chi-square-table.pdf)
+```math
+q_{\alpha}^\mathrm{lower} = F^{-1}(\frac{\alpha}{2}) = \mathrm{ppf}(\frac{\alpha}{2})
+```
 
 
 ## Confidence intervals for sample mean
@@ -79,11 +105,16 @@ Variance of sample mean:
 \mathrm{Var}(\bar{x}) = \mathrm{Var}\left( \frac{1}{n} \sum_{i=1}^{n} x_i \right) = \frac{1}{n^2} \sum_{i=1}^{n} \mathrm{Var}(x_i) = \frac{1}{n^2} \sum_{i=1}^{n} \sigma^2 = \frac{\sigma^2}{n} 
 ```
 
+TODO
+
+
 ## Wishart distribution
 
 Scatter matrix:
 
-$$ S = \sum_{i=1}^{n} ( x_i - \bar{x} ) ( x_i - \bar{x} )^\intercal  $$
+```math
+S = \sum_{i=1}^{n} ( x_i - \bar{x} ) ( x_i - \bar{x} )^\intercal
+```
 
 If $X \sim N_{p}(0, V)$ then $S \sim W_{p}(V, n)$.
 
@@ -93,18 +124,24 @@ If $p=1$ and $V=1$, then $W_{1}(1, n) = \chi^{2}_{n}$.
 
 Variance of Wishart:
 
-$$ n \cdot ( V_{ii} V_{jj} + V_{ij}^{2} ) $$
+```math
+n \cdot ( V_{ii} V_{jj} + V_{ij}^{2} )
+```
 
 
 ## Confidence intervals for sample covariance
 
 Unbiased estimator of variance of scatter matrix:
 
-$$ \mathrm{Var}(\hat{S}) = (n-1) ( V_{ii} V_{jj} + V_{ij}^{2} ) $$
+```math
+\mathrm{Var}(\hat{S}) = (n-1) ( V_{ii} V_{jj} + V_{ij}^{2} )
+```
 
 Sample covariance matrix:
 
-$$ V = \frac{1}{n-1} S $$
+```math
+V = \frac{1}{n-1} S
+```
 
 Variance of sample covariance matrix:
 
@@ -165,6 +202,10 @@ Q_{ij}^\mathrm{lower} = F_{W}^{-1}(\frac{\alpha}{2}; \hat{V}_{ij})
 ```math
 Q_{ij}^\mathrm{lower} < V_{ij} < Q_{ij}^\mathrm{upper} \qquad \mathrm{at}~(1-\alpha)~\mathrm{CL}
 ```
+
+See also:
+
+-   Quantiles of $\chi^2 \Rightarrow$ $p$-values [Table](https://math.arizona.edu/~jwatkins/chi-square-table.pdf)
 
 
 ## Notes about covariance and Wishart
