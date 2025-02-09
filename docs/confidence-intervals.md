@@ -105,14 +105,12 @@ Variance of sample mean:
 \mathrm{Var}(\bar{x}) = \mathrm{Var}\left( \frac{1}{n} \sum_{i=1}^{n} x_i \right) = \frac{1}{n^2} \sum_{i=1}^{n} \mathrm{Var}(x_i) = \frac{1}{n^2} \sum_{i=1}^{n} \sigma^2 = \frac{\sigma^2}{n} 
 ```
 
-Asymptotically assuming the errors are normally distributed:
+Asymptotically assuming the errors are normally distributed,
+we have a frequentist confidence interval:
 
 ```math
-\mu = \bar{x} \pm z_\alpha \sigma_{\bar{x}} = \bar{x} \pm z_\alpha \frac{\sigma}{\sqrt{n}}
+\mu = \bar{x} \pm z_\alpha \sigma_{\bar{x}} = \bar{x} \pm z_\alpha \frac{\sigma}{\sqrt{n}} \qquad \mathrm{at}~(1-\alpha)~\mathrm{CL}
 ```
-
-and we have a frequentist confidence interval:
-TODO
 
 
 ## Wishart distribution
