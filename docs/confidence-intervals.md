@@ -105,6 +105,13 @@ Variance of sample mean:
 \mathrm{Var}(\bar{x}) = \mathrm{Var}\left( \frac{1}{n} \sum_{i=1}^{n} x_i \right) = \frac{1}{n^2} \sum_{i=1}^{n} \mathrm{Var}(x_i) = \frac{1}{n^2} \sum_{i=1}^{n} \sigma^2 = \frac{\sigma^2}{n} 
 ```
 
+Asymptotically assuming the errors are normally distributed:
+
+```math
+\mu = \bar{x} \pm z_\alpha \sigma_{\bar{x}} = \bar{x} \pm z_\alpha \frac{\sigma}{\sqrt{n}}
+```
+
+and we have a frequentist confidence interval:
 TODO
 
 
@@ -188,15 +195,15 @@ V_{ij} = \hat{V}_{ij} \pm \Delta_{ij}^{\alpha}
 where $\Delta_{ij}^{\alpha}$ are determined by the quantiles of the Wishart distribution, $Q_{ij}$.
 
 ```math
-1 - \frac{\alpha}{2} = F_{W}(Q_{ij}^\mathrm{upper}; \hat{V}_{ij})
+1 - \frac{\alpha}{2} = F_{W}(Q_{ij}^\mathrm{upper}; \hat{V}_{ij}, n-1)
 ```
 
 ```math
-Q_{ij}^\mathrm{upper} = F_{W}^{-1}(1 - \frac{\alpha}{2}; \hat{V}_{ij})
+Q_{ij}^\mathrm{upper} = F_{W}^{-1}(1 - \frac{\alpha}{2}; \hat{V}_{ij}, n-1)
 ```
 
 ```math
-Q_{ij}^\mathrm{lower} = F_{W}^{-1}(\frac{\alpha}{2}; \hat{V}_{ij})
+Q_{ij}^\mathrm{lower} = F_{W}^{-1}(\frac{\alpha}{2}; \hat{V}_{ij}, n-1)
 ```
 
 ```math
