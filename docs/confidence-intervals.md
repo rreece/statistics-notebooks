@@ -100,41 +100,63 @@ Variance of sample covariance matrix:
 
 Asymptotically assuming the errors are normally distributed:
 
-$$ \hat{\sigma}_{ij} = \sqrt{\frac{1}{n-1} ( \hat{V}_{ii} \hat{V}_{jj} + \hat{V}_{ij}^{2} )} $$
+```math
+\hat{\sigma}_{ij} = \sqrt{\frac{1}{n-1} ( \hat{V}_{ii} \hat{V}_{jj} + \hat{V}_{ij}^{2} )}
+```
 
 and we have a frequentist confidence interval:
 
-$$ V_{ij} = \hat{V}_{ij} \pm z_{\alpha} \hat{\sigma}_{ij} $$
+```math
+V_{ij} = \hat{V}_{ij} \pm z_{\alpha} \hat{\sigma}_{ij}
+```
 
 at a confidence level picked by the two-sided $z$ score:
 
-$$ z_{\alpha} = \Phi^{-1}\left(1 - \frac{\alpha}{2}\right) $$
+```math
+z_{\alpha} = \Phi^{-1}\left(1 - \frac{\alpha}{2}\right)
+```
 
 because
 
-$$ \Phi(z) = \int_{-\infty}^{z} \phi(x) dx  = 1 - \frac{\alpha}{2} $$
+```math
+\Phi(z) = \int_{-\infty}^{z} \phi(x) dx  = 1 - \frac{\alpha}{2}
+```
 
 where
 
-$$ \phi(x) = \frac{1}{\sqrt{2\pi}} e^{x^2/2} $$
+```math
+\phi(x) = \frac{1}{\sqrt{2\pi}} e^{x^2/2}
+```
 
 The one-sided formula is
 
-$$ \Phi(z) = \int_{-\infty}^{z} \phi(x) dx  = 1 - \alpha $$
+```math
+\Phi(z) = \int_{-\infty}^{z} \phi(x) dx  = 1 - \alpha
+```
 
 Instead of using quantiles of the normal distribution we could use the quantiles of the Wishart distribution more directly.
 
-$$ V_{ij} = \hat{V}_{ij} \pm \Delta_{ij}^{\alpha} $$
+```math
+V_{ij} = \hat{V}_{ij} \pm \Delta_{ij}^{\alpha}
+```
 
 where $\Delta_{ij}^{\alpha}$ are determined by the quantiles of the Wishart distribution, $Q_{ij}$.
 
-$$ 1 - \frac{\alpha}{2} = F_{W}(Q_{ij}^\mathrm{upper}; \hat{V}_{ij}) $$
+```math
+1 - \frac{\alpha}{2} = F_{W}(Q_{ij}^\mathrm{upper}; \hat{V}_{ij})
+```
 
-$$ Q_{ij}^\mathrm{upper} = F_{W}^{-1}(1 - \frac{\alpha}{2}; \hat{V}_{ij}) $$
+```math
+Q_{ij}^\mathrm{upper} = F_{W}^{-1}(1 - \frac{\alpha}{2}; \hat{V}_{ij})
+```
 
-$$ Q_{ij}^\mathrm{lower} = F_{W}^{-1}(\frac{\alpha}{2}; \hat{V}_{ij}) $$
+```math
+Q_{ij}^\mathrm{lower} = F_{W}^{-1}(\frac{\alpha}{2}; \hat{V}_{ij})
+```
 
-$$ Q_{ij}^\mathrm{lower} < V_{ij} < Q_{ij}^\mathrm{upper} \qquad \mathrm{at}~(1-\alpha)~\mathrm{CL} $$
+```math
+Q_{ij}^\mathrm{lower} < V_{ij} < Q_{ij}^\mathrm{upper} \qquad \mathrm{at}~(1-\alpha)~\mathrm{CL}
+```
 
 
 ## Notes about covariance and Wishart
