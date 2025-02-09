@@ -1,5 +1,11 @@
 # Linear Algebra
 
+## Identities
+
+```math
+\vec{x}^\intercal A \vec{x} = \mathrm{tr}(A \vec{x} \vec{x}^\intercal)
+```
+
 
 ## Random vectors
 
