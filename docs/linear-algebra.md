@@ -3,8 +3,8 @@
 
 ## Random vectors
 
-If $\vec{x}$ is a random vector with $\mathrm{E}(\vec{x}) = \mu$
-and $\mathrm{Var}(\vec{x}) = \Sigma$, then
+If $`\vec{x}`$ is a random vector with $`\mathrm{E}(\vec{x}) = \mu`$
+and $`\mathrm{Var}(\vec{x}) = \Sigma`$, then
 
 $$ \mathrm{E}(A \vec{x}) = A \vec{\mu} $$
 
