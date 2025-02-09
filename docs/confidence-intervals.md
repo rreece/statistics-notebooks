@@ -128,12 +128,6 @@ where
 \phi(x) = \frac{1}{\sqrt{2\pi}} e^{x^2/2}
 ```
 
-The one-sided formula is
-
-```math
-\Phi(z) = \int_{-\infty}^{z} \phi(x) dx  = 1 - \alpha
-```
-
 Instead of using quantiles of the normal distribution we could use the quantiles of the Wishart distribution more directly.
 
 ```math
