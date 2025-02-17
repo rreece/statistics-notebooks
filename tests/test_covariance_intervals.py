@@ -6,7 +6,7 @@ import math
 import numpy as np
 
 from covariance_calculators.estimators import calc_sample_covariance
-from covariance_calculators.intervals import calc_covariance_intervals
+from covariance_calculators.intervals import calc_covariance_intervals, calc_precision_intervals
 
 
 np.random.seed(42)
@@ -168,4 +168,49 @@ def run_coverage_test(confidence_level=0.95, n_toys=200, method="normal"):
 
     coverage = n_accept / n_toys
     return coverage
+
+
+def test_invwishart_precision_interval():
+
+    # Generate sample data
+    n_samples = 1000
+    n_features = 3
+    true_cov = np.array([[0.010,  0.005,  0.003],
+                         [0.005,  0.020, -0.002],
+                         [0.003, -0.002,  0.030]])
+    true_precision = np.linalg.inv(true_cov)
+    data = np.random.multivariate_normal(mean=np.zeros(n_features),
+                                   cov=true_cov,
+                                   size=n_samples)
+
+    # Calculate confidence interval
+    confidence_level = 0.95
+    method = "invwishart"
+    precision, precision_lower, precision_upper = calc_precision_intervals(data, confidence_level=confidence_level, method=method)
+
+    print("DEBUG: true_precision =")
+    print(true_precision)
+    print("DEBUG: precision =")
+    print(precision)
+    print("DEBUG: precision_lower =")
+    print(precision_lower)
+    print("DEBUG: precision_upper =")
+    print(precision_upper)
+
+    ref_precision =       np.array([[117.096, -31.865, -12.001],
+                                    [-31.865,  58.596,   4.764],
+                                    [-12.001,   4.764,  37.930]])
+
+    ref_precision_lower = np.array([[107.257, -37.515, -16.239],
+                                    [-37.515,  53.671,   1.846],
+                                    [-16.239,   1.846,  34.753]])
+
+    ref_precision_upper = np.array([[127.775, -26.505,  -7.807],
+                                    [-26.505,  63.783,   7.711], 
+                                    [ -7.807,   7.711,  41.496]])
+
+    assert np.allclose(precision, ref_precision, rtol=0, atol=1e-3)
+    assert np.allclose(precision_lower, ref_precision_lower, rtol=0, atol=1e-3)
+    assert np.allclose(precision_upper, ref_precision_upper, rtol=0, atol=1e-3)
+
 

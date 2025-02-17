@@ -108,3 +108,63 @@ def calc_covariance_intervals(
         
     return covariance, ci_lower, ci_upper
 
+
+def calc_precision_intervals(
+    data: np.ndarray,
+    precision=None,
+    confidence_level: float = 0.95,
+    method: str = 'invwishart',
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Calculate confidence intervals for sample precision matrix.
+    
+    Parameters:
+    -----------
+    data : np.ndarray
+        Input data matrix (n_samples, n_features)
+    confidence_level : float
+        Confidence level (default: 0.95)
+    method : str
+        Method to use ('invwishart')
+        
+    Returns:
+    --------
+    precision : np.ndarray
+        Sample precision matrix
+    ci_lower : np.ndarray
+        Lower bounds of confidence intervals
+    ci_upper : np.ndarray
+        Upper bounds of confidence intervals
+    """
+    n_samples, n_features = data.shape
+
+    if precision is None:
+        covariance = calc_sample_covariance(data)
+        precision = np.linalg.inv(covariance)
+
+    alpha = 1.0 - confidence_level
+    dof = n_samples - 1
+
+    if method == 'invwishart':
+        # Initialize inverse Wishart with correct scale
+        invwishart_dist = stats.invwishart(df=dof, scale=precision * (dof-n_features-1))
+
+        # Generate samples to estimate quantiles
+        n_samples_invwishart = 10000
+        invwishart_samples = invwishart_dist.rvs(n_samples_invwishart)
+
+        # Calculate element-wise quantiles (ppf)
+        ci_lower = np.zeros((n_features, n_features))
+        ci_upper = np.zeros((n_features, n_features))
+
+        for i in range(n_features):
+            for j in range(n_features):
+                samples_ij = invwishart_samples[:, i, j]
+                ci_lower[i, j] = np.percentile(samples_ij, 100 * alpha/2)
+                ci_upper[i, j] = np.percentile(samples_ij, 100 * (1 - alpha/2))
+
+    else:
+        raise ValueError("Method must be 'invwishart'")
+
+    return precision, ci_lower, ci_upper
+
