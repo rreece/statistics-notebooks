@@ -1,3 +1,6 @@
 [submodule "python/hepplot"]
 	path = python/hepplot
 	url = https://github.com/rreece/hepplot
+[submodule "python/covariance_calculators"]
+	path = python/covariance_calculators
+	url = https://github.com/rreece/covariance_calculators
