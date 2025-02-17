@@ -4,6 +4,7 @@ covariance_calculators/estimators.py
 TODO:
 
 [x] Sample mean and covariance
+[ ] Support pandas DataFrames
 [ ] Rolling mean and covariance
 [ ] Exponential moving mean and covariance
 [ ] Online mean and covariance

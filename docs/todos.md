@@ -6,5 +6,6 @@
 - [x] Add some basic tests
 - [x] Inverse Wishart confidence intervals for a precision matrix
 - [ ] Support pandas DataFrames
+- [ ] Refactor `covariance_calculators` into repo used as a sub-module
 - [ ] Clean up notebooks
 
