@@ -28,7 +28,7 @@ def test_normal_covariance_interval():
     # Calculate confidence interval
     confidence_level = 0.95
     method = "normal"
-    covariance, covariance_lower, covariance_upper = calc_covariance_intervals(data, confidence_level=confidence_level, method=method)
+    covariance, covariance_lower, covariance_upper = calc_covariance_intervals(data=data, confidence_level=confidence_level, method=method)
 
     ref_covariance = np.array([[0.0095,  0.0051,  0.0031],
                                [0.0051,  0.0202, -0.0005],
@@ -67,7 +67,7 @@ def compare_methods(
 
     results = dict()
     for method in methods:
-        results[method] = calc_covariance_intervals(data, covariance=covariance1, confidence_level=confidence_level, method=method)
+        results[method] = calc_covariance_intervals(data=data, covariance=covariance1, confidence_level=confidence_level, method=method)
 
     # Print results
     for method in methods:
@@ -160,7 +160,7 @@ def run_coverage_test(confidence_level=0.95, n_toys=200, method="normal"):
         covariance1 = calc_sample_covariance(data)
 
         # Calculate covariance and confidence intervals
-        covariance, covariance_lower, covariance_upper = calc_covariance_intervals(data, covariance=covariance1, confidence_level=confidence_level, method=method)
+        covariance, covariance_lower, covariance_upper = calc_covariance_intervals(data=data, covariance=covariance1, confidence_level=confidence_level, method=method)
 
         # Check coverage
         accepts = np.where( (covariance_lower < true_cov) & (true_cov < covariance_upper), 1, 0)
@@ -186,7 +186,7 @@ def test_invwishart_precision_interval():
     # Calculate confidence interval
     confidence_level = 0.95
     method = "invwishart"
-    precision, precision_lower, precision_upper = calc_precision_intervals(data, confidence_level=confidence_level, method=method)
+    precision, precision_lower, precision_upper = calc_precision_intervals(data=data, confidence_level=confidence_level, method=method)
 
     print("DEBUG: true_precision =")
     print(true_precision)
