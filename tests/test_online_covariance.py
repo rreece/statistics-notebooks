@@ -27,7 +27,7 @@ def test_online_covariance():
 
     covariance = calc_sample_covariance(data)
 
-#    ref_mean = np.array([0.0051, -0.0020, 0.0089])
+    ref_mean = np.array([0.0051, -0.0020, 0.0089])
 #    assert np.allclose(mean, ref_mean, rtol=0, atol=1e-4)
 
     ref_covariance = np.array([[0.0095,  0.0051,  0.0031],
