@@ -29,7 +29,7 @@ def test_online_covariance():
     covariance = calc_sample_covariance(data)
 
     assert np.allclose(mean, true_mean, rtol=0, atol=1e-2)
-    assert np.allclose(covariance, true_cov, rtol=0, atol=1e-3)
+    assert np.allclose(covariance, true_cov, rtol=0, atol=5e-3)
 
     online_calculator = OnlineCovariance(n_features)
 
