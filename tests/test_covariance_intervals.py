@@ -1,5 +1,5 @@
 """
-covariance_calculators/test_intervals.py
+test_covariance_intervals.py
 """
 
 import math
