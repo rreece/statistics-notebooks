@@ -193,15 +193,15 @@ V_{ij} = \hat{V}_{ij} \pm \Delta_{ij}^{\alpha}
 where $\Delta_{ij}^{\alpha}$ are determined by the quantiles of the Wishart distribution, $Q_{ij}$.
 
 ```math
-1 - \frac{\alpha}{2} = F_{W}(Q_{ij}^\mathrm{upper}; \hat{V}_{ij}, n-1)
+1 - \frac{\alpha}{2} = F_{W}(Q^\mathrm{upper}; \hat{V}, n-1)
 ```
 
 ```math
-Q_{ij}^\mathrm{upper} = F_{W}^{-1}(1 - \frac{\alpha}{2}; \hat{V}_{ij}, n-1)
+Q^\mathrm{upper} = F_{W}^{-1}(1 - \frac{\alpha}{2}; \hat{V}, n-1)
 ```
 
 ```math
-Q_{ij}^\mathrm{lower} = F_{W}^{-1}(\frac{\alpha}{2}; \hat{V}_{ij}, n-1)
+Q^\mathrm{lower} = F_{W}^{-1}(\frac{\alpha}{2}; \hat{V}, n-1)
 ```
 
 ```math
