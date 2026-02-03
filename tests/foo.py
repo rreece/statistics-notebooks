@@ -1,4 +1,4 @@
-from covariance_calculators.estimators import OnlineCovariance, EMACovariance
+from covariance_calculators.estimators import OnlineCovariance
 
 c = OnlineCovariance(1)
 #c = EMACovariance(1, alpha=0.1)
