@@ -12,17 +12,12 @@ def test_hypo_test_mu_scan():
     """
     Hypothesis test scan for a single signal
     """
-    bins = list(range(6))
     y = [ [9,8,6,4,1], [12,10,7,2,2], [6,10,5,8,2] ]
     data = [26, 30, 19, 12, 6]
-    labels = ["A","B","C"]
     ytotal  = [sum(i) for i in zip(*y)]
 
     yerr    = [
         0.2*math.sqrt(_y) for _y in ytotal
-    ]
-    yerrs   = [
-        [0.2*math.sqrt(_y) for _y in y_i] for y_i in y
     ]
 
     signal_data = [0, 0, 1, 6, 10]

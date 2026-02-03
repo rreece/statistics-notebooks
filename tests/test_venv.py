@@ -17,4 +17,4 @@ def in_virtualenv():
     return get_base_prefix_compat() != sys.prefix
 
 def test_in_virtualenv():
-    assert in_virtualenv() == True
+    assert in_virtualenv() is True
