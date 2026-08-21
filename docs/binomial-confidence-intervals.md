@@ -7,12 +7,13 @@ TODO
 
 ## Wald
 
+The Wald confidence interval (CI) at $(1-\alpha)$ confidence level (CL) is
+
+
 ```math
 \hat{\mu} \pm z_{\alpha/2} \sigma_{\hat{\mu}}, \qquad \sigma_{\hat{\mu}} = \sqrt{\frac{\hat{\mu} (1 - \hat{\mu})}{n}}
 
 ```
-
-is the confidence interval (CI) at $(1-\alpha)$~confidence level (CL).
 
 
 ## Wilson
@@ -21,6 +22,11 @@ TODO
 
 
 ## Clopper-Pearson
+
+TODO
+
+
+## Agresti-Coull
 
 TODO
 
