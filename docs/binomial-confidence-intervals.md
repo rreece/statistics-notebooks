@@ -43,5 +43,6 @@ TODO
 -   Cowan, G. (2008). [Error analysis for efficiency](https://www.pp.rhul.ac.uk/~cowan/stat/notes/efferr.pdf).
 -   Dunnigan, K. (2008). [Confidence interval calculation for binomial proportions](https://www.mwsug.org/proceedings/2008/pharma/MWSUG-2008-P08.pdf).
 -   Kahouadji, N. (2025). [A comprehensive comparison of the Wald, Wilson, and adjusted Wilson confidence intervals for proportions](https://arxiv.org/abs/2508.10223).
+-   Ullrich, T. & Xu, Z. (2007). [Treatment of errors in efficiency calculations](https://arxiv.org/abs/physics/0701199).
 -   Wilson, E.B. (1927). Probable inference, the law of succession, and statistical inference. *Journal of the American Statistical Association*, 22, 209--212.
 
