@@ -6,6 +6,12 @@
 \vec{x}^\intercal A \vec{x} = \mathrm{tr}(A \vec{x} \vec{x}^\intercal)
 ```
 
+## Positive semi-definite matrices
+
+A matrix, $A$, is positive semi-definite (PSD) if for every vector $\vec{x}$, $\vec{x}^\intercal A \vec{x} \geq 0$
+
+Equivalently, all its eigenvalues are $\geq 0$.
+
 
 ## Gaussian random vectors
 
