@@ -21,6 +21,17 @@ near $p$, and, conversely, if the function is convex near $p$, then the
 Hessian matrix is positive-semidefinite at $p$.
 
 
+## Invertible matrix theorem
+
+-   [Invertible matrix](https://en.wikipedia.org/wiki/Invertible_matrix)
+-   [Invertible matrix theorem](https://mathworld.wolfram.com/InvertibleMatrixTheorem.html)
+
+
+## Gershgorin circle theorem
+
+-   [Gershgorin circle theorem](https://en.wikipedia.org/wiki/Gershgorin_circle_theorem)
+
+
 ## Gaussian random vectors
 
 If $`\vec{x}`$ is a random vector with
