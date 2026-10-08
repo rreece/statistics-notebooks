@@ -60,3 +60,6 @@ If $`\vec{x}`$ is a random vector $\sim N(\vec{\mu}, \Sigma)$
 \mathrm{Var}(\vec{x}^\intercal A \vec{x}) = 2 \mathrm{tr}(A\Sigma{}A\Sigma) + 4 \vec{\mu}^\intercal A \Sigma A \vec{\mu} 
 ```
 
+## References
+
+-   Boyd, S. & Vandenberghe, L. (2018). [*Introduction to Applied Linear Algebra: Vectors, Matrices, and Least Squares*](https://web.stanford.edu/~boyd/vmls/vmls.pdf).
