@@ -19,7 +19,7 @@ def test_covariance_intervals_bracket_estimate():
 
     data = np.random.randn(100, 2)
     cov, cov_lower, cov_upper = calc_covariance_intervals(
-        data=data, confidence_level=0.95, method="normal"
+        data=data, confidence_level=0.95, method="asymptotic"
     )
 
     assert np.all(cov_lower <= cov)
