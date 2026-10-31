@@ -6,6 +6,31 @@
 \vec{x}^\intercal A \vec{x} = \mathrm{tr}(A \vec{x} \vec{x}^\intercal)
 ```
 
+## Positive semi-definite matrices
+
+A matrix, $A$, is positive semi-definite (PSD) if for every vector
+$\vec{x} \neq \vec{0}$, $\vec{x}^\intercal A \vec{x} \geq 0$.
+
+Equivalently, all its eigenvalues are $\geq 0$.
+
+Positive-definite and positive-semidefinite real matrices are at the basis of
+convex optimization, since, given a function of several real variables that is
+twice differentiable, then if its Hessian matrix (matrix of its second partial
+derivatives) is positive-definite at a point $p$, then the function is convex
+near $p$, and, conversely, if the function is convex near $p$, then the
+Hessian matrix is positive-semidefinite at $p$.
+
+
+## Invertible matrix theorem
+
+-   [Invertible matrix](https://en.wikipedia.org/wiki/Invertible_matrix)
+-   [Invertible matrix theorem](https://mathworld.wolfram.com/InvertibleMatrixTheorem.html)
+
+
+## Gershgorin circle theorem
+
+-   [Gershgorin circle theorem](https://en.wikipedia.org/wiki/Gershgorin_circle_theorem)
+
 
 ## Gaussian random vectors
 
@@ -35,3 +60,6 @@ If $`\vec{x}`$ is a random vector $\sim N(\vec{\mu}, \Sigma)$
 \mathrm{Var}(\vec{x}^\intercal A \vec{x}) = 2 \mathrm{tr}(A\Sigma{}A\Sigma) + 4 \vec{\mu}^\intercal A \Sigma A \vec{\mu} 
 ```
 
+## References
+
+-   Boyd, S. & Vandenberghe, L. (2018). [*Introduction to Applied Linear Algebra: Vectors, Matrices, and Least Squares*](https://web.stanford.edu/~boyd/vmls/vmls.pdf).
