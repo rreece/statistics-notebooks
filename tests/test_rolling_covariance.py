@@ -2,10 +2,9 @@
 test_rolling_covariance.py
 """
 
-import math
 import numpy as np
 
-from covariance_calculators.estimators import calc_sample_mean, calc_sample_covariance, RollingCovariance
+from covariance_calculators.estimators import RollingCovariance
 
 
 np.random.seed(42)
