@@ -7,4 +7,4 @@ import hepplot
 
 
 def test_example():
-    pass
+    assert hepplot is not None
